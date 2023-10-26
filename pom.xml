@@ -84,6 +84,12 @@
             <version>0.12.2</version>
         </dependency>
 
+        <!--  发送邮件  -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.6.2</version>
+        </dependency>
     </dependencies>
 
     <!--    SpringBoot应用打包插件-->

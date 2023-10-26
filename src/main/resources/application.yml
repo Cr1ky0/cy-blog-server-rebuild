@@ -31,3 +31,10 @@ logging:
   file:
     path: logs/
     name: ${logging.file.path}logs.log
+
+# 邮件系统
+mail:
+  port: "25"
+  host: "smtp.sina.com"
+  username: "sklin552@sina.com"
+  password: "d50e1c3e76fa9ff9"

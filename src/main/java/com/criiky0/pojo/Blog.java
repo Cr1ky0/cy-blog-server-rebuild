@@ -12,6 +12,7 @@ import lombok.Data;
 @TableName(value ="blog")
 @Data
 public class Blog implements Serializable {
+    @TableId
     private Long blogId;
 
     private String title;

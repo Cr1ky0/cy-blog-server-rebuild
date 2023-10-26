@@ -12,6 +12,7 @@ import lombok.Data;
 @TableName(value ="user")
 @Data
 public class User implements Serializable {
+    @TableId
     private Long userId;
 
     private String username;

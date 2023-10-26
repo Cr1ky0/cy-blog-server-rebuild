@@ -12,6 +12,7 @@ import lombok.Data;
 @TableName(value ="comment")
 @Data
 public class Comment implements Serializable {
+    @TableId
     private Long commentId;
 
     private String content;

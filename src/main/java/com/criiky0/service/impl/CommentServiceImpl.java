@@ -7,7 +7,7 @@ import com.criiky0.mapper.CommentMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author 50309
+* @author criiky0
 * @description 针对表【comment】的数据库操作Service实现
 * @createDate 2023-10-26 14:24:13
 */

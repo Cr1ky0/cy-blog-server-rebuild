@@ -11,6 +11,7 @@ import lombok.Data;
 @TableName(value ="menu")
 @Data
 public class Menu implements Serializable {
+    @TableId
     private Long menuId;
 
     private String title;

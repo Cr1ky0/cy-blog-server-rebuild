@@ -2,6 +2,7 @@ package com.criiky0.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.UserDTO;
@@ -14,6 +15,7 @@ import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 
@@ -93,5 +95,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         HashMap<String, UserDTO> map = new HashMap<>();
         map.put("user", userDTO);
         return Result.ok(map);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> uploadAvatar(String avatar, Long userId) {
+        // 保存avatar
+        int update = userMapper.update(null,
+                new LambdaUpdateWrapper<User>().eq(User::getUserId, userId).set(User::getAvatar, avatar));
+        if(update > 0){
+            return Result.ok(null);
+        }
+        return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
     }
 }

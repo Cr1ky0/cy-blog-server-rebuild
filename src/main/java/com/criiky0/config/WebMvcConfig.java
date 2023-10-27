@@ -20,7 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginProtectInterceptor)
-                .addPathPatterns("/api/user/info")
+                .addPathPatterns("/api/user/info","/api/user/avatar")
                 .excludePathPatterns("");
     }
 }

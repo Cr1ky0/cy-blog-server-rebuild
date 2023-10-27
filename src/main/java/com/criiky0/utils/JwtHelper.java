@@ -23,26 +23,37 @@ public class JwtHelper {
     private static final SecretKey KEY = Jwts.SIG.HS512.key().build(); // 当前程序签名秘钥（直接生成，每次重启服务器都会改变）
 
     // 生成token字符串
-    public String createToken(Long userId) {
+    public String createToken(Long userId, String userRole) {
         return Jwts.builder().subject("YYGH-USER")
             .expiration(new Date(System.currentTimeMillis() + tokenExpiration * 1000 * 60)).claim("userId", userId)
-            .signWith(KEY).compressWith(Jwts.ZIP.GZIP).compact();
+            .claim("userRole", userRole).signWith(KEY).compressWith(Jwts.ZIP.GZIP).compact();
     }
 
     // 从token字符串获取userid
     public Long getUserId(String token) {
-        if (StringUtils.isEmpty(token))
+        if (StringUtils.isEmpty(token) || isExpiration(token))
             return null;
 
         Jws<Claims> claimsJws = Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token);
         Claims claims = claimsJws.getPayload();
 
         // 如果userId长度不够会被自动转为Integer类型，这里兼容一下
-        Object userId =  claims.get("userId");
-        if(userId instanceof Integer){
-            return  ((Integer) userId).longValue();
+        Object userId = claims.get("userId");
+        if (userId instanceof Integer) {
+            return ((Integer)userId).longValue();
         }
         return (Long)userId;
+    }
+
+    // 从token字符串中获取userRole
+    public String getUserRole(String token){
+        if (StringUtils.isEmpty(token) || isExpiration(token))
+            return null;
+
+        Jws<Claims> claimsJws = Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token);
+        Claims claims = claimsJws.getPayload();
+
+        return claims.get("userRole").toString();
     }
 
     // 判断token是否有效

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 /**
  * @TableName user
@@ -15,12 +16,15 @@ public class User implements Serializable {
     @TableId
     private Long userId;
 
+    @Length(min=3,max=20)
     private String username;
 
+    @Length(min=3,max=20)
     private String nickname;
 
     private String password;
 
+    @Length(max=50)
     private String brief;
 
     private String email;

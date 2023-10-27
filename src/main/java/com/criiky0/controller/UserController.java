@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -61,6 +63,7 @@ public class UserController {
         codeMap.put("code", code);
         // 放入session
         session.setAttribute("verify-code", code);
+        session.setAttribute("verify-email", email);
         session.setMaxInactiveInterval(10 * 60); // 10分钟内有效
         return Result.ok(codeMap);
     }
@@ -82,11 +85,21 @@ public class UserController {
      * @param session session
      */
     @PostMapping("register")
-    public Result<HashMap<String, String>> register(@RequestBody RegisterVo data, HttpSession session) {
+    public Result<HashMap<String, String>> register(@Validated @RequestBody RegisterVo data, BindingResult bindingResult,
+        HttpSession session) {
+        if(bindingResult.hasErrors()){
+            return Result.build(null,ResultCodeEnum.PARAM_ERROR);
+        }
         // 验证code
         Integer code = (Integer)session.getAttribute("verify-code");
+        System.out.println(code);
         if (!Objects.equals(code, data.getCode())) {
             return Result.build(null, ResultCodeEnum.CODE_ERROR);
+        }
+        // 验证邮箱
+        String email = session.getAttribute("verify-email").toString();
+        if (!email.equals(data.getEmail())) {
+            return Result.build(null, ResultCodeEnum.EMAIL_NOT_CORRECT);
         }
         User user = new User();
         user.setUsername(data.getUsername());
@@ -96,9 +109,12 @@ public class UserController {
 
         // 注册
         Result<HashMap<String, String>> r = userService.register(user);
+        Integer code1 = r.getCode();
         // 移除session
-        session.removeAttribute("verify-code");
-
+        if (code1 != 400) {
+            session.removeAttribute("verify-code");
+            session.removeAttribute("verify-email");
+        }
         return r;
     }
 
@@ -118,6 +134,7 @@ public class UserController {
      * @param file blob类型文件
      * @param userId 拦截器附带id
      */
+    // TODO:限制头像大小
     @PostMapping("avatar")
     public Result<ResultCodeEnum> uploadAvatar(@RequestParam("file") MultipartFile file,
         @RequestAttribute("userid") Long userId) {
@@ -160,6 +177,11 @@ public class UserController {
         }
     }
 
+    /**
+     * 获取头像，直接返回图片流
+     * 
+     * @param userId 拦截器
+     */
     @GetMapping("avatar")
     public void getAvatar(@RequestAttribute("userid") Long userId) {
         try (OutputStream os = response.getOutputStream()) {
@@ -179,5 +201,31 @@ public class UserController {
         } catch (IOException e) {
             log.error("获取图片异常{}", e.getMessage());
         }
+    }
+
+    /**
+     * 更新用户nickname或brief
+     * 
+     * @param user 请求体
+     * @param userId 拦截器
+     */
+    @PatchMapping("info")
+    public Result<ResultCodeEnum> updateUserInfo(@Validated @RequestBody User user, BindingResult bindingResult,
+        @RequestAttribute("userid") Long userId) {
+        if (bindingResult.hasErrors()) {
+            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
+        }
+        user.setUserId(userId);
+        return userService.updateUserInfo(user);
+    }
+
+    /**
+     * 修改用户Role（管理员方法）
+     * 
+     * @param user
+     */
+    @PatchMapping("role")
+    public Result<ResultCodeEnum> updateUserRole(@RequestBody User user) {
+        return userService.updateuserRole(user);
     }
 }

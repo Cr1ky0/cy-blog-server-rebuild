@@ -23,4 +23,8 @@ public interface UserService extends IService<User> {
     Result<HashMap<String, UserDTO>>  getUserInfo(Long userId);
 
     Result<ResultCodeEnum> uploadAvatar(String avatar,Long userId);
+
+    Result<ResultCodeEnum> updateUserInfo(User user);
+
+    Result<ResultCodeEnum> updateuserRole(User user);
 }

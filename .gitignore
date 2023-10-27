@@ -1,6 +1,7 @@
 # self
 application.yml
 /logs
+/public
 
 ######
 target/

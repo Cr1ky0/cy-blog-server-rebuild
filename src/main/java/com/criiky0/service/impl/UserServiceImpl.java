@@ -53,7 +53,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         HashMap<String, String> map = new HashMap<>();
-        String token = jwtHelper.createToken(loginUser.getUserId());
+        String token = jwtHelper.createToken(loginUser.getUserId(), loginUser.getRole().toString());
         map.put("token", token);
         return Result.ok(map);
     }
@@ -61,28 +61,30 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result<HashMap<String, String>> register(User user) {
         // 验证用户
-        User loginUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(StringUtils.isEmpty(user.getUsername()),
-            User::getUsername, user.getUsername()));
+        User loginUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
         if (loginUser != null) {
             return Result.build(null, ResultCodeEnum.USER_USED_ERROR);
         }
+        // 验证邮箱
+        User emailUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, user.getEmail()));
+        if (emailUser != null) {
+            return Result.build(null, ResultCodeEnum.REGISTER_ERROR);
+        }
+
         // 验证密码
         if (StringUtils.isEmpty(user.getPassword())) {
             return Result.build(null, ResultCodeEnum.REGISTER_ERROR);
         }
 
-        // 验证邮箱
-        User emailUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(StringUtils.isEmpty(user.getEmail()),
-            User::getUsername, user.getUsername()));
-        if (emailUser != null) {
-            return Result.build(null, ResultCodeEnum.REGISTER_ERROR);
-        }
-
         // MD5
         user.setPassword(MD5Util.encrypt(user.getPassword()));
-        userMapper.insert(user);
+        user.setRole("user"); // 避免后面生成token空指针异常
+        int insert = userMapper.insert(user);
+        if(insert == 0){
+            return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        }
         HashMap<String, String> map = new HashMap<>();
-        String token = jwtHelper.createToken(loginUser.getUserId());
+        String token = jwtHelper.createToken(user.getUserId(), user.getRole().toString());
         map.put("token", token);
         return Result.ok(map);
     }
@@ -101,10 +103,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public Result<ResultCodeEnum> uploadAvatar(String avatar, Long userId) {
         // 保存avatar
         int update = userMapper.update(null,
-                new LambdaUpdateWrapper<User>().eq(User::getUserId, userId).set(User::getAvatar, avatar));
-        if(update > 0){
+            new LambdaUpdateWrapper<User>().eq(User::getUserId, userId).set(User::getAvatar, avatar));
+        if (update > 0) {
             return Result.ok(null);
         }
-        return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> updateUserInfo(User user) {
+        boolean hasNickName = !StringUtils.isEmpty(user.getNickname());
+        boolean hasBrief = !StringUtils.isEmpty(user.getBrief());
+        if (!hasNickName && !hasBrief) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        }
+        int rows = userMapper.update(null, new LambdaUpdateWrapper<User>().eq(User::getUserId, user.getUserId())
+            .set(hasNickName, User::getNickname, user.getNickname()).set(hasBrief, User::getBrief, user.getBrief()));
+        if (rows > 0) {
+            return Result.ok(null);
+        }
+        return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> updateuserRole(User user) {
+        boolean hasRole = !StringUtils.isEmpty(user.getRole().toString());
+        if (!hasRole) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        }
+        int rows = userMapper.update(null,
+            new LambdaUpdateWrapper<User>().eq(User::getUserId, user.getUserId()).set(User::getRole, user.getRole()));
+        if (rows > 0) {
+            return Result.ok(null);
+        }
+        return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
     }
 }

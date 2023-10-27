@@ -2,6 +2,7 @@ package com.criiky0.service;
 
 import com.criiky0.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.criiky0.pojo.dto.UserDTO;
 import com.criiky0.utils.Result;
 
 import java.util.HashMap;
@@ -16,4 +17,6 @@ public interface UserService extends IService<User> {
     Result<HashMap<String, String>> login(User user);
 
     Result<HashMap<String, String>> register(User user);
+
+    Result<HashMap<String, UserDTO>>  getUserInfo(Long userId);
 }

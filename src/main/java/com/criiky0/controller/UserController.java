@@ -2,6 +2,7 @@ package com.criiky0.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.criiky0.pojo.User;
+import com.criiky0.pojo.dto.UserDTO;
 import com.criiky0.pojo.vo.RegisterVo;
 import com.criiky0.service.UserService;
 import com.criiky0.utils.JavaMailUtil;
@@ -83,5 +84,14 @@ public class UserController {
         session.removeAttribute("verify-code");
 
         return r;
+    }
+
+    /**
+     * 根据当前token获取用户数据
+     * @param userId 拦截器解析出来的userId
+     */
+    @GetMapping("info")
+    public Result<HashMap<String, UserDTO>> getUserInfo(@RequestAttribute("userid") Long userId) {
+        return userService.getUserInfo(userId);
     }
 }

@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-
 @Component
 public class LoginProtectInterceptor implements HandlerInterceptor {
 
@@ -25,15 +24,30 @@ public class LoginProtectInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String token = request.getHeader("token");
-        if(StringUtils.isEmpty(token) || jwtHelper.isExpiration(token)){
-            Result r = Result.build(null, ResultCodeEnum.NOT_LOGIN);
-            ObjectMapper objectMapper = new ObjectMapper();
-            String s = objectMapper.writeValueAsString(r);
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+        throws Exception {
+
+        String bearer = request.getHeader("Authorization");
+
+        // 错误相应信息
+        Result<Object> r = Result.build(null, ResultCodeEnum.NOT_LOGIN);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String s = objectMapper.writeValueAsString(r);
+        if (StringUtils.isEmpty(bearer)) {
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().print(s);
             return false;
         }
+        String token = bearer.trim().replaceFirst("^Bearer\\s+", "");
+        if (StringUtils.isEmpty(token) || jwtHelper.isExpiration(token)) {
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().print(s);
+            return false;
+        }
+
+        // 成功后解析用户id并放入头部返回给controller
+        Long userId = jwtHelper.getUserId(token);
+        request.setAttribute("userid", userId);
         return true;
     }
 }

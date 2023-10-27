@@ -4,6 +4,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.pojo.User;
+import com.criiky0.pojo.dto.UserDTO;
 import com.criiky0.service.UserService;
 import com.criiky0.mapper.UserMapper;
 import com.criiky0.utils.JwtHelper;
@@ -81,6 +82,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         HashMap<String, String> map = new HashMap<>();
         String token = jwtHelper.createToken(loginUser.getUserId());
         map.put("token", token);
+        return Result.ok(map);
+    }
+
+    @Override
+    public Result<HashMap<String, UserDTO>> getUserInfo(Long userId) {
+        User user = userMapper.selectById(userId);
+        UserDTO userDTO = new UserDTO(user.getUserId(), user.getUsername(), user.getNickname(), user.getBrief(),
+            user.getEmail(), user.getAvatar(), user.getRole());
+        HashMap<String, UserDTO> map = new HashMap<>();
+        map.put("user", userDTO);
         return Result.ok(map);
     }
 }

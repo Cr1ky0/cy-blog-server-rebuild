@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
+
 @SpringBootTest
 public class MyTest {
 
@@ -27,6 +29,13 @@ public class MyTest {
         System.out.println(ElasticSearchUtil.client);
         System.out.println(ElasticSearchUtil.client);
         System.out.println(ElasticSearchUtil.client);
+    }
+    
+    @Test
+    public void test5() throws IOException {
+        ElasticSearchUtil.client.indices().create(c -> c
+                .index("users")
+        );
     }
 
 }

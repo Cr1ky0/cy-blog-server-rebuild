@@ -14,7 +14,8 @@ public enum ResultCodeEnum {
     ROLE_NOT_ALLOW(401, "权限不足！"),EMAIL_NOT_CORRECT(400,"不是对应的邮箱，无法注册！"),PARAM_ERROR(400,"提供的参数过长或过短或为空！"),
 
     // universal
-    OPERATION_ERROR(400, "非法操作！"), UNKNOWN_ERROR(400, "未知错误！"), PARAM_NULL_ERROR(400, "参数为空！");
+    OPERATION_ERROR(400, "非法操作！"), UNKNOWN_ERROR(400, "未知错误！"), PARAM_NULL_ERROR(400, "参数为空！"),
+    OCCUR_EXCEPTION(500,"服务器内部异常，请联系管理或重试！");
 
     private Integer code;
     private String message;

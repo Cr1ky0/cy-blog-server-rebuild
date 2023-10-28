@@ -43,7 +43,6 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
         }
 
         // 验证token权限
-        System.out.println(jwtHelper.getUserRole(token));
         if (!jwtHelper.getUserRole(token).equals("admin")) {
             Result<Object> r1 = Result.build(null, ResultCodeEnum.ROLE_NOT_ALLOW);
             ObjectMapper objectMapper1 = new ObjectMapper();

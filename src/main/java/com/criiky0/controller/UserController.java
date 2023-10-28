@@ -92,7 +92,6 @@ public class UserController {
         }
         // 验证code
         Integer code = (Integer)session.getAttribute("verify-code");
-        System.out.println(code);
         if (!Objects.equals(code, data.getCode())) {
             return Result.build(null, ResultCodeEnum.CODE_ERROR);
         }

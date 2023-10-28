@@ -134,12 +134,15 @@ public class UserController {
      * @param file blob类型文件
      * @param userId 拦截器附带id
      */
-    // TODO:限制头像大小
     @PostMapping("avatar")
     public Result<ResultCodeEnum> uploadAvatar(@RequestParam("file") MultipartFile file,
         @RequestAttribute("userid") Long userId) {
         if (file.isEmpty()) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        }
+
+        if(file.getSize() > 2048){
+            return Result.build(null,ResultCodeEnum.AVATAR_TO_LARGE);
         }
 
         try {

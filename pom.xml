@@ -112,6 +112,19 @@
             <artifactId>hibernate-validator-annotation-processor</artifactId>
             <version>8.0.1.Final</version>
         </dependency>
+
+        <!-- ElasticSearch -->
+        <!-- Springboot内置了，会冲突 -->
+        <!--        <dependency>-->
+        <!--            <groupId>co.elastic.clients</groupId>-->
+        <!--            <artifactId>elasticsearch-java</artifactId>-->
+        <!--            <version>8.10.4</version>-->
+        <!--        </dependency>-->
+        <dependency>
+            <groupId>co.elastic.clients</groupId>
+            <artifactId>elasticsearch-java</artifactId>
+        </dependency>
+
     </dependencies>
 
     <!--    SpringBoot应用打包插件-->

@@ -79,7 +79,7 @@ public class JavaMailUtil {
         try {
             message.setSubject("criik-blog验证码");
             message.setText("验证码为：" + code);
-            message.setFrom(new InternetAddress("sklin552@sina.com"));
+            message.setFrom(new InternetAddress(JavaMailUtil.username));
             message.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
             // 发送
             Transport.send(message);

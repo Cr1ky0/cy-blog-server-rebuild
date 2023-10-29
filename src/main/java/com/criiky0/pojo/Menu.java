@@ -27,16 +27,14 @@ public class Menu implements Serializable {
     @NotBlank
     private String color;
 
-    @NotNull
     private Integer level;
 
-    @NotNull
     private Integer sort;
 
     @Version
     private Integer version;
 
-    private Integer active;
+    private Integer deleted;
 
     private Long belongMenuId;
 

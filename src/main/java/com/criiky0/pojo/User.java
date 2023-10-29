@@ -38,7 +38,7 @@ public class User implements Serializable {
     @Version
     private Integer version;
 
-    private Integer active;
+    private Integer deleted;
 
     private static final long serialVersionUID = 1L;
 }

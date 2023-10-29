@@ -1,18 +1,32 @@
 package com.criiky0;
 
+import com.criiky0.mapper.MenuMapper;
+import com.criiky0.pojo.dto.MenuDTO;
+import com.criiky0.service.MenuService;
 import com.criiky0.utils.ElasticSearchUtil;
 import com.criiky0.utils.JavaMailUtil;
+import com.criiky0.utils.Result;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 @SpringBootTest
 public class MyTest {
 
     @Autowired
     ElasticSearchUtil elasticSearchClientFactory;
+    
+    @Autowired
+    private MenuMapper menuMapper;
+
+    @Autowired
+    private MenuService menuService;
+    
+    
     @org.junit.jupiter.api.Test
     public void test1() {
         Integer i = JavaMailUtil.sendCode("503094716@qq.com");
@@ -38,4 +52,11 @@ public class MyTest {
         );
     }
 
+    @Test
+    public void test6(){
+        Result<HashMap<String, List<MenuDTO>>> menuOfCriiky0 = menuService.getMenuOfCriiky0();
+        HashMap<String, List<MenuDTO>> data = menuOfCriiky0.getData();
+        List<MenuDTO> menuDTOS = data.get("menus");
+        System.out.println(menuDTOS);
+    }
 }

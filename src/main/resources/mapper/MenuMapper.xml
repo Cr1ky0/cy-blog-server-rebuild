@@ -5,16 +5,28 @@
 <mapper namespace="com.criiky0.mapper.MenuMapper">
 
     <resultMap id="BaseResultMap" type="com.criiky0.pojo.Menu">
-            <id property="menuId" column="menu_id" jdbcType="BIGINT"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="icon" column="icon" jdbcType="VARCHAR"/>
-            <result property="color" column="color" jdbcType="VARCHAR"/>
-            <result property="level" column="level" jdbcType="INTEGER"/>
-            <result property="sort" column="sort" jdbcType="INTEGER"/>
-            <result property="version" column="version" jdbcType="INTEGER"/>
-            <result property="active" column="active" jdbcType="INTEGER"/>
-            <result property="belongMenuId" column="belong_menu_id" jdbcType="BIGINT"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <id property="menuId" column="menu_id" jdbcType="BIGINT"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="icon" column="icon" jdbcType="VARCHAR"/>
+        <result property="color" column="color" jdbcType="VARCHAR"/>
+        <result property="level" column="level" jdbcType="INTEGER"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="active" column="active" jdbcType="INTEGER"/>
+        <result property="belongMenuId" column="belong_menu_id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="menuDTOResultMap" type="menuDTO">
+        <id property="menuId" column="menu_id"/>
+        <result property="title" column="title"/>
+        <result property="icon" column="icon"/>
+        <result property="color" column="color"/>
+        <result property="level" column="level"/>
+        <result property="sort" column="sort"/>
+        <result property="belongMenuId" column="belong_menu_id"/>
+        <result property="userId" column="user_id"/>
+        <collection property="subMenu" ofType="menuDTO" resultMap="menuDTOResultMap"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -23,4 +35,45 @@
         version,active,belong_menu_id,
         user_id
     </sql>
+
+    <select id="findMaxSort" resultType="java.lang.Integer">
+        select max(sort) as max_sort from menu
+        <where>
+            <choose>
+                <when test="belongMenuId != null">
+                    and belong_menu_id = #{belongMenuId}
+                </when>
+                <otherwise>
+                    and level = 1;
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="findParentLevel" resultType="java.lang.Integer">
+        <choose>
+            <when test="belongMenuId != null">
+                select level from menu
+                where menu_id = #{belongMenuId}
+            </when>
+            <otherwise>
+                select null;
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectTopLevelMenuOfCriiky0" resultType="menuDTO">
+        select *
+        from menu
+        where user_id =
+              (select user_id from user where username = 'criiky0')
+          and level = 1;
+    </select>
+
+    <select id="selectSubMenu" resultType="menuDTO">
+        select * from menu
+        where belong_menu_id = #{menuId};
+    </select>
+
+
 </mapper>

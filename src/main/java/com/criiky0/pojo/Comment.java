@@ -28,7 +28,7 @@ public class Comment implements Serializable {
     @Version
     private Integer version;
 
-    private Integer active;
+    private Integer deleted;
 
     private Long belongCommentId;
 

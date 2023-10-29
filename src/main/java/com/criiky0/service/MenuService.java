@@ -2,9 +2,12 @@ package com.criiky0.service;
 
 import com.criiky0.pojo.Menu;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.criiky0.pojo.dto.MenuDTO;
 import com.criiky0.utils.Result;
+import com.criiky0.utils.ResultCodeEnum;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author criiky0
@@ -14,4 +17,10 @@ import java.util.HashMap;
 public interface MenuService extends IService<Menu> {
 
     Result<HashMap<String, Menu>> addMenu(Menu menu);
+
+    Result<ResultCodeEnum> deleteMenu(Long menuId);
+
+    List<MenuDTO> findSubMenu(MenuDTO rootMenu);
+
+    Result<HashMap<String, List<MenuDTO>>> getMenuOfCriiky0();
 }

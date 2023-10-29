@@ -32,7 +32,7 @@ public class Blog implements Serializable {
     @Version
     private Integer version;
 
-    private Integer active;
+    private Integer deleted;
 
     private Long userId;
 

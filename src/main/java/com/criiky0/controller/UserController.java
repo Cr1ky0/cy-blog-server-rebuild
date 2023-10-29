@@ -4,7 +4,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.UserDTO;
-import com.criiky0.pojo.vo.RegisterVo;
+import com.criiky0.pojo.vo.RegisterVO;
 import com.criiky0.service.UserService;
 import com.criiky0.utils.JavaMailUtil;
 import com.criiky0.utils.Result;
@@ -85,8 +85,8 @@ public class UserController {
      * @param session session
      */
     @PostMapping("register")
-    public Result<HashMap<String, String>> register(@Validated @RequestBody RegisterVo data, BindingResult bindingResult,
-        HttpSession session) {
+    public Result<HashMap<String, String>> register(@Validated @RequestBody RegisterVO data, BindingResult bindingResult,
+                                                    HttpSession session) {
         if(bindingResult.hasErrors()){
             return Result.build(null,ResultCodeEnum.PARAM_ERROR);
         }

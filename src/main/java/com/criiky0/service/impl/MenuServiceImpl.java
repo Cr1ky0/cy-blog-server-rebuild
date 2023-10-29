@@ -1,8 +1,11 @@
 package com.criiky0.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.pojo.Menu;
 import com.criiky0.pojo.dto.MenuDTO;
+import com.criiky0.pojo.vo.UpdateMenuVO;
 import com.criiky0.service.MenuService;
 import com.criiky0.mapper.MenuMapper;
 import com.criiky0.utils.Result;
@@ -51,7 +54,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public Result<ResultCodeEnum> deleteMenu(Long menuId) {
+    public Result<ResultCodeEnum> deleteMenu(Long menuId, Long userId) {
+        Menu menu = menuMapper.selectById(menuId);
+        if (menu == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
+        if (!menu.getUserId().equals(userId)) {
+            return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
+        }
         int rows = menuMapper.deleteById(menuId);
         if (rows > 0)
             return Result.ok(null);
@@ -60,6 +70,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     /**
      * 递归查询生成menu完整结构
+     * 
      * @param rootMenu
      * @return 返回对应menu的子菜单（子菜单结构是完整的）
      */
@@ -71,7 +82,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         if (subMenu.isEmpty())
             return null;
         // 否则递归查找子菜单并返回subMenu
-        for(MenuDTO menu : subMenu){
+        for (MenuDTO menu : subMenu) {
             List<MenuDTO> childs = findSubMenu(menu);
             menu.setSubMenu(childs);
         }
@@ -81,13 +92,34 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public Result<HashMap<String, List<MenuDTO>>> getMenuOfCriiky0() {
         List<MenuDTO> menus = menuMapper.selectTopLevelMenuOfCriiky0();
-        for(MenuDTO menu : menus){
+        for (MenuDTO menu : menus) {
             List<MenuDTO> subMenu = findSubMenu(menu);
             menu.setSubMenu(subMenu);
         }
         HashMap<String, List<MenuDTO>> map = new HashMap<>();
-        map.put("menus",menus);
+        map.put("menus", menus);
         return Result.ok(map);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
+        Long menuId = updateMenuVO.getMenuId();
+        Menu menu = menuMapper.selectById(menuId);
+        if (menu == null)
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        if (!menu.getUserId().equals(userId))
+            return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
+        LambdaUpdateWrapper<Menu> wrapper = new LambdaUpdateWrapper<>();
+        wrapper.eq(Menu::getMenuId, updateMenuVO.getMenuId())
+            .set(updateMenuVO.getTitle() != null, Menu::getTitle, updateMenuVO.getTitle())
+            .set(updateMenuVO.getIcon() != null, Menu::getIcon, updateMenuVO.getIcon())
+            .set(updateMenuVO.getColor() != null, Menu::getColor, updateMenuVO.getColor())
+            .set(updateMenuVO.getBelongMenuId() != null, Menu::getBelongMenuId, updateMenuVO.getBelongMenuId());
+        int update = menuMapper.update(null, wrapper);
+        if(update > 0){
+            return Result.ok(null);
+        }
+        return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
     }
 
 }

@@ -3,6 +3,7 @@ package com.criiky0.service;
 import com.criiky0.pojo.Menu;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.criiky0.pojo.dto.MenuDTO;
+import com.criiky0.pojo.vo.UpdateMenuVO;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 
@@ -18,9 +19,11 @@ public interface MenuService extends IService<Menu> {
 
     Result<HashMap<String, Menu>> addMenu(Menu menu);
 
-    Result<ResultCodeEnum> deleteMenu(Long menuId);
+    Result<ResultCodeEnum> deleteMenu(Long menuId,Long userId);
 
     List<MenuDTO> findSubMenu(MenuDTO rootMenu);
 
     Result<HashMap<String, List<MenuDTO>>> getMenuOfCriiky0();
+
+    Result<ResultCodeEnum> updateMenu(UpdateMenuVO updateMenuVO,Long userId);
 }

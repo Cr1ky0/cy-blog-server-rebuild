@@ -27,7 +27,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("");
 
         registry.addInterceptor(roleProtectInterceptor)
-                .addPathPatterns("/api/user/role","/api/menu/**")
-                .excludePathPatterns("/api/menu/criiky0","/api/menu/single");
+                .addPathPatterns("/api/user/role","/api/menu/**","/api/blog/**")
+                .excludePathPatterns("/api/menu/criiky0","/api/menu/{id}","/api/blog/{id}");
     }
 }

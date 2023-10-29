@@ -12,9 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/menu")
@@ -64,8 +62,8 @@ public class MenuController {
      * @param menuId
      * @return
      */
-    @GetMapping("/single")
-    public Result<HashMap<String, MenuDTO>> getMenu(@RequestParam("menu_id") Long menuId) {
+    @GetMapping("/{id}")
+    public Result<HashMap<String, MenuDTO>> getMenu(@PathVariable("id") Long menuId) {
         Optional<Menu> opt = menuService.getOptById(menuId);
         if (opt.isEmpty()) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
@@ -87,14 +85,16 @@ public class MenuController {
      * @param userId
      */
     @PatchMapping
-    public Result<ResultCodeEnum> updateMenu(@Validated @RequestBody UpdateMenuVO updateMenuVO, BindingResult result,
+    public Result<HashMap<String,Menu>> updateMenu(@Validated @RequestBody UpdateMenuVO updateMenuVO, BindingResult result,
         @RequestAttribute("userid") Long userId) {
         if (result.hasErrors()) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
-        if (updateMenuVO.getTitle() == null && updateMenuVO.getBelongMenuId() == null && updateMenuVO.getIcon() == null
-            && updateMenuVO.getColor() == null)
-            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        List<Object> paramList = Arrays.asList(updateMenuVO.getTitle(),updateMenuVO.getBelongMenuId(),updateMenuVO.getIcon(),updateMenuVO.getColor());
+        boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
+        if(isAllNull){
+            return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
+        }
         return menuService.updateMenu(updateMenuVO, userId);
     }
 }

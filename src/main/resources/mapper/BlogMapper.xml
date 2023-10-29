@@ -25,4 +25,9 @@
         update_at,sort,version,
         active,user_id,menu_id
     </sql>
+
+    <select id="findMaxSort" resultType="java.lang.Integer">
+        select max(sort) as max_sort from blog
+            where menu_id = #{menuId};
+    </select>
 </mapper>

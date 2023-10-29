@@ -80,8 +80,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(MD5Util.encrypt(user.getPassword()));
         user.setRole("user"); // 避免后面生成token空指针异常
         int insert = userMapper.insert(user);
-        if(insert == 0){
-            return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        if (insert == 0) {
+            return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
         }
         HashMap<String, String> map = new HashMap<>();
         String token = jwtHelper.createToken(user.getUserId(), user.getRole().toString());
@@ -111,7 +111,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<ResultCodeEnum> updateUserInfo(User user) {
+    public Result<HashMap<String,UserDTO>> updateUserInfo(User user) {
         boolean hasNickName = !StringUtils.isEmpty(user.getNickname());
         boolean hasBrief = !StringUtils.isEmpty(user.getBrief());
         if (!hasNickName && !hasBrief) {
@@ -120,7 +120,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         int rows = userMapper.update(null, new LambdaUpdateWrapper<User>().eq(User::getUserId, user.getUserId())
             .set(hasNickName, User::getNickname, user.getNickname()).set(hasBrief, User::getBrief, user.getBrief()));
         if (rows > 0) {
-            return Result.ok(null);
+            User updatedUser = userMapper.selectById(user.getUserId());
+            UserDTO updatedUserDTO =
+                new UserDTO(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getNickname(),
+                    updatedUser.getBrief(), updatedUser.getEmail(), updatedUser.getAvatar(), updatedUser.getRole());
+            HashMap<String, UserDTO> map = new HashMap<>();
+            map.put("updatedUser",updatedUserDTO);
+            return Result.ok(map);
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
     }

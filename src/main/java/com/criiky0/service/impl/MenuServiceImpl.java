@@ -102,7 +102,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public Result<ResultCodeEnum> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
+    public Result<HashMap<String,Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
         Long menuId = updateMenuVO.getMenuId();
         Menu menu = menuMapper.selectById(menuId);
         if (menu == null)
@@ -117,7 +117,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             .set(updateMenuVO.getBelongMenuId() != null, Menu::getBelongMenuId, updateMenuVO.getBelongMenuId());
         int update = menuMapper.update(null, wrapper);
         if(update > 0){
-            return Result.ok(null);
+            Menu updatedMenu = menuMapper.selectById(updateMenuVO.getMenuId());
+            HashMap<String, Menu> map = new HashMap<>();
+            map.put("updatedMenu",updatedMenu);
+            return Result.ok(map);
         }
         return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
     }

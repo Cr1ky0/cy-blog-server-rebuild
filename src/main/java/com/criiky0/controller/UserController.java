@@ -212,7 +212,7 @@ public class UserController {
      * @param userId 拦截器
      */
     @PatchMapping("info")
-    public Result<ResultCodeEnum> updateUserInfo(@Validated @RequestBody User user, BindingResult bindingResult,
+    public Result<HashMap<String,UserDTO>> updateUserInfo(@Validated @RequestBody User user, BindingResult bindingResult,
         @RequestAttribute("userid") Long userId) {
         if (bindingResult.hasErrors()) {
             return Result.build(null, ResultCodeEnum.PARAM_ERROR);

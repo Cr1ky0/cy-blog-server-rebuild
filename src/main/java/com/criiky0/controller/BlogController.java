@@ -71,9 +71,6 @@ public class BlogController {
     @DeleteMapping
     public Result<ResultCodeEnum> delBlog(@RequestParam("blog_id") Long blogId,
         @RequestAttribute("userid") Long userId) {
-        if (blogId == null) {
-            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
-        }
         return blogService.deleteBlog(blogId, userId);
     }
 
@@ -111,24 +108,16 @@ public class BlogController {
     @DeleteMapping("/menu")
     public Result<ResultCodeEnum> deleteBlogsOfMenu(@RequestParam("menu_id") Long menuId,
         @RequestAttribute("userid") Long userId) {
-        if (menuId == null) {
-            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
-        }
         return blogService.deleteBlogsOfMenu(menuId, userId);
     }
 
     @GetMapping("/page")
-    public Result<HashMap<String,Object>> getBlogPage(@RequestParam("page") Integer page,
-        @RequestParam("size") Integer size) {
-        if(page == null)
-            page = 1;
-        if(size == null){
-            size = 10;
+    public Result<HashMap<String, Object>> getBlogPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        if (page <= 0 || size <= 0) {
+            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
         }
-        if(page <= 0 || size <= 0){
-            return Result.build(null,ResultCodeEnum.PARAM_ERROR);
-        }
-        return blogService.getBlogPage(page,size);
+        return blogService.getBlogPage(page, size);
     }
 
 }

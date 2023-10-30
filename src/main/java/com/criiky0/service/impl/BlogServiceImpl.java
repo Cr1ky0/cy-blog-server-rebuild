@@ -194,4 +194,5 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         map.put("totalSize",blogPage.getTotal());
         return Result.ok(map);
     }
+    
 }

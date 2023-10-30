@@ -46,9 +46,6 @@ public class MenuController {
     @DeleteMapping
     public Result<ResultCodeEnum> delMenu(@RequestParam("menu_id") Long menuId,
         @RequestAttribute("userid") Long userId) {
-        if(menuId == null){
-            return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
-        }
         return menuService.deleteMenu(menuId, userId);
     }
 

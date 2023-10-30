@@ -15,7 +15,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private RoleProtectInterceptor roleProtectInterceptor;
 
     @Autowired
-    public WebMvcConfig(LoginProtectInterceptor loginProtectInterceptor,RoleProtectInterceptor roleProtectInterceptor) {
+    public WebMvcConfig(LoginProtectInterceptor loginProtectInterceptor,
+        RoleProtectInterceptor roleProtectInterceptor) {
         this.loginProtectInterceptor = loginProtectInterceptor;
         this.roleProtectInterceptor = roleProtectInterceptor;
     }
@@ -23,10 +24,13 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginProtectInterceptor)
-                .addPathPatterns("/api/user/info","/api/user/avatar");
+                .addPathPatterns("/api/user/info", "/api/user/avatar");
 
         registry.addInterceptor(roleProtectInterceptor)
-                .addPathPatterns("/api/user/role","/api/menu/**","/api/blog/**")
-                .excludePathPatterns("/api/menu/criiky0","/api/menu/{id}","/api/blog/page","/api/blog/single/**");
+            .addPathPatterns("/api/user/role", "/api/menu/**",
+                    "/api/blog/**", "/api/menu/**","/api/comment/**")
+            .excludePathPatterns("/api/menu/criiky0", "/api/menu/{id}",
+                    "/api/blog/page", "/api/blog/single/**",
+                    "/api/comment/post");
     }
 }

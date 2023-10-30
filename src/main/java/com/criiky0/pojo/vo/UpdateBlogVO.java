@@ -15,12 +15,9 @@ public class UpdateBlogVO {
 
     @Length(min=1,max = 30)
     private String title;
+
     @Length(min=1)
     private String content;
-    @Min(0)
-    private Integer likes;
-    @Min(0)
-    private Integer views;
 
     @Future
     private Date updateAt;

@@ -1,5 +1,6 @@
 package com.criiky0.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
@@ -89,8 +90,8 @@ public class BlogController {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
         // 检验参数
-        List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
-            updateBlogVO.getLikes(), updateBlogVO.getViews(), updateBlogVO.getMenuId());
+        List<Object> paramList =
+            Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(), updateBlogVO.getMenuId());
         boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
         if (isAllNull) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
@@ -111,6 +112,13 @@ public class BlogController {
         return blogService.deleteBlogsOfMenu(menuId, userId);
     }
 
+    /**
+     * 获取博客分页数据
+     * 
+     * @param page
+     * @param size
+     * @return
+     */
     @GetMapping("/page")
     public Result<HashMap<String, Object>> getBlogPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "10") Integer size) {
@@ -120,4 +128,57 @@ public class BlogController {
         return blogService.getBlogPage(page, size);
     }
 
+    /**
+     * 更新浏览数据
+     * 
+     * @param blogId
+     * @param like
+     * @param plus
+     * @return
+     */
+    @PatchMapping("/browse")
+    public Result<HashMap<String, Blog>> updateBlogBrowse(@RequestParam("blog_id") Long blogId,
+        @RequestParam(value = "like", defaultValue = "true") boolean like,
+        @RequestParam(value = "plus", defaultValue = "true") boolean plus) {
+        Blog blog = blogService.getById(blogId);
+        if (blog == null)
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        // 更新likes
+        if (like) {
+            int num = blog.getLikes() + 1;
+            if (!plus) {
+                if (blog.getLikes() == 0)
+                    num = 0;
+                else
+                    num = blog.getLikes() - 1;
+            }
+            boolean updated = blogService
+                .update(new LambdaUpdateWrapper<Blog>().eq(Blog::getBlogId, blogId).set(Blog::getLikes, num));
+            if (updated) {
+                blog.setLikes(num);
+                HashMap<String, Blog> map = new HashMap<>();
+                map.put("updatedBlog", blog);
+                return Result.ok(map);
+            }
+        }
+        // 更新views
+        else {
+            int num = blog.getViews() + 1;
+            if (!plus) {
+                if (blog.getViews() == 0)
+                    num = 0;
+                else
+                    num = blog.getViews() - 1;
+            }
+            boolean updated = blogService
+                .update(new LambdaUpdateWrapper<Blog>().eq(Blog::getBlogId, blogId).set(Blog::getViews, num));
+            if (updated) {
+                blog.setViews(num);
+                HashMap<String, Blog> map = new HashMap<>();
+                map.put("updatedBlog", blog);
+                return Result.ok(map);
+            }
+        }
+        return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
 }

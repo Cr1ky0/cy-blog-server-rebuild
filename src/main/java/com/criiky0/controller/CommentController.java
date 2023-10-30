@@ -52,7 +52,13 @@ public class CommentController {
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
     }
 
-    @PatchMapping
+    /**
+     * 更新评论浏览数据
+     * @param commentId
+     * @param plus
+     * @return
+     */
+    @PatchMapping("/browse")
     public Result<HashMap<String,Comment>> updateCommentLikes(@RequestParam("comment_id") Long commentId,
         @RequestParam(value = "plus", defaultValue = "true") boolean plus) {
         Comment comment = commentService.getById(commentId);
@@ -60,8 +66,12 @@ public class CommentController {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
         int num = comment.getLikes() + 1;
-        if (!plus)
-            num = comment.getLikes() - 1;
+        if (!plus) {
+            if(comment.getLikes() == 0)
+                num = 0;
+            else
+                num = comment.getLikes() - 1;
+        }
         boolean updated = commentService.update(
             new LambdaUpdateWrapper<Comment>().eq(Comment::getCommentId, commentId).set(Comment::getLikes, num));
         if(updated){

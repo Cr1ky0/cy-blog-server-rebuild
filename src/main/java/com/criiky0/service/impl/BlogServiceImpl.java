@@ -141,8 +141,6 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         updateWrapper.eq(Blog::getBlogId, updateBlogVO.getBlogId())
             .set(updateBlogVO.getTitle() != null, Blog::getTitle, updateBlogVO.getTitle())
             .set(updateBlogVO.getContent() != null, Blog::getContent, updateBlogVO.getContent())
-            .set(updateBlogVO.getLikes() != null, Blog::getLikes, updateBlogVO.getLikes())
-            .set(updateBlogVO.getViews() != null, Blog::getViews, updateBlogVO.getViews())
             .set(updateBlogVO.getUpdateAt() != null, Blog::getUpdateAt, updateBlogVO.getUpdateAt())
             .set(updateBlogVO.getMenuId() != null, Blog::getMenuId, updateBlogVO.getMenuId());
         int update = blogMapper.update(null, updateWrapper);

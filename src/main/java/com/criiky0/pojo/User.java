@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
@@ -17,16 +20,20 @@ public class User implements Serializable {
     private Long userId;
 
     @Length(min=3,max=20)
+    @NotBlank
     private String username;
 
     @Length(min=3,max=20)
+    @NotBlank
     private String nickname;
 
+    @NotBlank
     private String password;
 
     @Length(max=50)
     private String brief;
 
+    @NotBlank
     private String email;
 
     private String avatar;

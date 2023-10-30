@@ -2,6 +2,9 @@ package com.criiky0.service;
 
 import com.criiky0.pojo.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.criiky0.utils.Result;
+
+import java.util.HashMap;
 
 /**
 * @author criiky0
@@ -10,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface CommentService extends IService<Comment> {
 
+    Result<HashMap<String,Comment>> addComment(Comment comment);
 }

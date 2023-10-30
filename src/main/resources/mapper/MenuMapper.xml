@@ -41,10 +41,10 @@
         <where>
             <choose>
                 <when test="belongMenuId != null">
-                    and belong_menu_id = #{belongMenuId}
+                    and belong_menu_id = #{belongMenuId} and deleted = 0;
                 </when>
                 <otherwise>
-                    and level = 1;
+                    and level = 1 and deleted = 0;
                 </otherwise>
             </choose>
         </where>
@@ -54,7 +54,7 @@
         <choose>
             <when test="belongMenuId != null">
                 select level from menu
-                where menu_id = #{belongMenuId}
+                where menu_id = #{belongMenuId} and deleted = 0;
             </when>
             <otherwise>
                 select null;
@@ -67,12 +67,12 @@
         from menu
         where user_id =
               (select user_id from user where username = 'criiky0')
-          and level = 1;
+          and level = 1 and deleted = 0;
     </select>
 
     <select id="selectSubMenu" resultType="menuDTO">
         select * from menu
-        where belong_menu_id = #{menuId};
+        where belong_menu_id = #{menuId} and deleted = 0;
     </select>
 
 

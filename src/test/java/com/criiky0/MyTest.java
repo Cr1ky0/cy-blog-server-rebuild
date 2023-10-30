@@ -4,6 +4,8 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.criiky0.mapper.BlogMapper;
 import com.criiky0.mapper.MenuMapper;
 import com.criiky0.pojo.Blog;
@@ -19,10 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @SpringBootTest
 public class MyTest {
@@ -123,5 +122,22 @@ public class MyTest {
     public void test12() throws IOException {
         ElasticsearchClient client = ElasticSearchUtil.client;
         client.indices().delete(c -> c.index("blogs"));
+    }
+    
+    @Test
+    public void test13(){
+        Integer maxSort = blogMapper.findMaxSort(1718504282029727746L);
+        System.out.println(maxSort);
+    }
+
+    @Test
+    public void test14(){
+        Page<Blog> myPage = new Page<>(1, 5);
+        Page<Blog> blogPage = blogMapper.selectPage(myPage, null);
+        System.out.println(blogPage.getRecords());
+        System.out.println(blogPage.getPages());
+        System.out.println(blogPage.getCurrent());
+        System.out.println(blogPage.getTotal());
+        System.out.println(blogPage.getSize());
     }
 }

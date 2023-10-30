@@ -51,7 +51,7 @@ public class BlogController {
      * @param menuId
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping("/single/{id}")
     public Result<HashMap<String, Blog>> getBlog(@PathVariable("id") Long menuId) {
         Blog blog = blogService.getById(menuId);
         if (blog == null)
@@ -63,6 +63,7 @@ public class BlogController {
 
     /**
      * 删除博客
+     * 
      * @param blogId
      * @param userId
      * @return
@@ -70,29 +71,64 @@ public class BlogController {
     @DeleteMapping
     public Result<ResultCodeEnum> delBlog(@RequestParam("blog_id") Long blogId,
         @RequestAttribute("userid") Long userId) {
+        if (blogId == null) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        }
         return blogService.deleteBlog(blogId, userId);
     }
 
     /**
      * 更新博客
+     * 
      * @param updateBlogVO
      * @param result
      * @param userId
      * @return
      */
     @PatchMapping
-    public Result<HashMap<String,Blog>> updateBlog(@Validated @RequestBody UpdateBlogVO updateBlogVO, BindingResult result,
-        @RequestAttribute("userid") Long userId) {
+    public Result<HashMap<String, Blog>> updateBlog(@Validated @RequestBody UpdateBlogVO updateBlogVO,
+        BindingResult result, @RequestAttribute("userid") Long userId) {
         if (result.hasErrors()) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
         // 检验参数
-        List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(), updateBlogVO.getLikes(),
-            updateBlogVO.getViews(), updateBlogVO.getMenuId());
+        List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
+            updateBlogVO.getLikes(), updateBlogVO.getViews(), updateBlogVO.getMenuId());
         boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
-        if(isAllNull){
-            return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
+        if (isAllNull) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
-        return blogService.updateBlog(updateBlogVO,userId);
+        return blogService.updateBlog(updateBlogVO, userId);
     }
+
+    /**
+     * 删除指定menu下的所有blogs
+     * 
+     * @param menuId
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/menu")
+    public Result<ResultCodeEnum> deleteBlogsOfMenu(@RequestParam("menu_id") Long menuId,
+        @RequestAttribute("userid") Long userId) {
+        if (menuId == null) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        }
+        return blogService.deleteBlogsOfMenu(menuId, userId);
+    }
+
+    @GetMapping("/page")
+    public Result<HashMap<String,Object>> getBlogPage(@RequestParam("page") Integer page,
+        @RequestParam("size") Integer size) {
+        if(page == null)
+            page = 1;
+        if(size == null){
+            size = 10;
+        }
+        if(page <= 0 || size <= 0){
+            return Result.build(null,ResultCodeEnum.PARAM_ERROR);
+        }
+        return blogService.getBlogPage(page,size);
+    }
+
 }

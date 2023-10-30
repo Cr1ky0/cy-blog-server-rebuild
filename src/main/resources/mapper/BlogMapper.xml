@@ -28,6 +28,11 @@
 
     <select id="findMaxSort" resultType="java.lang.Integer">
         select max(sort) as max_sort from blog
-            where menu_id = #{menuId};
+            where menu_id = #{menuId} and deleted = 0;
     </select>
+
+    <update id="deleteAllOfMenu">
+        update blog set deleted = 1
+            where menu_id = #{menuId};
+    </update>
 </mapper>

@@ -23,11 +23,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginProtectInterceptor)
-                .addPathPatterns("/api/user/info","/api/user/avatar")
-                .excludePathPatterns("");
+                .addPathPatterns("/api/user/info","/api/user/avatar");
 
         registry.addInterceptor(roleProtectInterceptor)
                 .addPathPatterns("/api/user/role","/api/menu/**","/api/blog/**")
-                .excludePathPatterns("/api/menu/criiky0","/api/menu/{id}","/api/blog/{id}");
+                .excludePathPatterns("/api/menu/criiky0","/api/menu/{id}","/api/blog/page","/api/blog/single/**");
     }
 }

@@ -5,9 +5,13 @@ import co.elastic.clients.elasticsearch.core.DeleteResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.criiky0.mapper.MenuMapper;
 import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.BlogDoc;
+import com.criiky0.pojo.Menu;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.mapper.BlogMapper;
@@ -22,6 +26,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author criiky0
@@ -34,6 +40,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
 
     private BlogMapper blogMapper;
 
+    private MenuMapper menuMapper;
+
     private final co.elastic.clients.elasticsearch._types.Result CREATED =
         co.elastic.clients.elasticsearch._types.Result.Created;
 
@@ -44,12 +52,17 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         co.elastic.clients.elasticsearch._types.Result.Updated;
 
     @Autowired
-    public BlogServiceImpl(BlogMapper blogMapper) {
+    public BlogServiceImpl(BlogMapper blogMapper, MenuMapper menuMapper) {
         this.blogMapper = blogMapper;
+        this.menuMapper = menuMapper;
     }
 
     @Override
     public Result<HashMap<String, Blog>> addBlog(Blog blog) {
+        Menu menu = menuMapper.selectById(blog.getMenuId());
+        if (menu == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
         // 自动计算sort
         Integer maxSort = blogMapper.findMaxSort(blog.getMenuId());
         if (maxSort != null) {
@@ -140,12 +153,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 ElasticsearchClient client = ElasticSearchUtil.client;
                 UpdateResponse<BlogDoc> response;
                 try {
-                    response =
-                        client
-                            .update(
-                                u -> u.index("blogs").id(updatedBlog.getBlogId().toString())
-                                    .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent())),
-                                BlogDoc.class);
+                    response = client.update(u -> u.index("blogs").id(updatedBlog.getBlogId().toString())
+                        .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent())), BlogDoc.class);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -158,5 +167,31 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
             }
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> deleteBlogsOfMenu(Long menuId, Long userId) {
+        Menu menu = menuMapper.selectById(menuId);
+        if (menu == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
+        if (!menu.getUserId().equals(userId)) {
+            return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
+        }
+        blogMapper.deleteAllOfMenu(menuId);
+        return Result.ok(null);
+    }
+
+    @Override
+    public Result<HashMap<String,Object>> getBlogPage(Integer page, Integer size) {
+        Page<Blog> myPage = new Page<>(page, size);
+        Page<Blog> blogPage = blogMapper.selectPage(myPage, null);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("records",blogPage.getRecords());
+        map.put("currentPage",blogPage.getCurrent());
+        map.put("pageSize",blogPage.getSize());
+        map.put("totalPage",blogPage.getPages());
+        map.put("totalSize",blogPage.getTotal());
+        return Result.ok(map);
     }
 }

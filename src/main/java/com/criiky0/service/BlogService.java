@@ -7,6 +7,7 @@ import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
 * @author criiky0
@@ -20,4 +21,8 @@ public interface BlogService extends IService<Blog> {
     Result<ResultCodeEnum> deleteBlog(Long blogId, Long userId);
 
     Result<HashMap<String,Blog>> updateBlog(UpdateBlogVO updateBlogVO, Long userId);
+
+    Result<ResultCodeEnum> deleteBlogsOfMenu(Long menuId, Long userId);
+
+    Result<HashMap<String,Object>> getBlogPage(Integer page, Integer size);
 }

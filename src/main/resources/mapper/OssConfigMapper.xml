@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.criiky0.mapper.OssConfigMapper">
+
+    <resultMap id="BaseResultMap" type="com.criiky0.pojo.OssConfig">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="endpoint" column="endpoint" jdbcType="VARCHAR"/>
+            <result property="bucket" column="bucket" jdbcType="VARCHAR"/>
+            <result property="accessKeyId" column="access_key_id" jdbcType="VARCHAR"/>
+            <result property="accessKeySecret" column="access_key_secret" jdbcType="VARCHAR"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+            <result property="deleted" column="deleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,endpoint,bucket,
+        access_key_id,access_key_secret,version,
+        deleted
+    </sql>
+</mapper>

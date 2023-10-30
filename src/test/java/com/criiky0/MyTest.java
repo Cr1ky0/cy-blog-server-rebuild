@@ -4,12 +4,15 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.criiky0.mapper.BlogMapper;
 import com.criiky0.mapper.MenuMapper;
+import com.criiky0.mapper.OssConfigMapper;
 import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.BlogDoc;
+import com.criiky0.pojo.OssConfig;
 import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.MenuDTO;
 import com.criiky0.service.MenuService;
@@ -37,6 +40,9 @@ public class MyTest {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private OssConfigMapper ossConfigMapper;
 
     @org.junit.jupiter.api.Test
     public void test1() {
@@ -139,5 +145,12 @@ public class MyTest {
         System.out.println(blogPage.getCurrent());
         System.out.println(blogPage.getTotal());
         System.out.println(blogPage.getSize());
+    }
+
+    @Test
+    public void test15(){
+        QueryWrapper<OssConfig> queryWrapper = new QueryWrapper<>();
+        OssConfig config = ossConfigMapper.selectOne(queryWrapper);
+        System.out.println(config);
     }
 }

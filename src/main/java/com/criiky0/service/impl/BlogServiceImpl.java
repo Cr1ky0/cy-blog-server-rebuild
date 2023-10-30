@@ -4,6 +4,7 @@ import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch.core.DeleteResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -25,6 +26,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -176,7 +178,27 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         if (!menu.getUserId().equals(userId)) {
             return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
         }
+        // ES批量删除
+        List<Blog> blogs = blogMapper.selectList(new LambdaQueryWrapper<Blog>().eq(Blog::getMenuId, menuId));
+        if(!blogs.isEmpty()) {
+            for (Blog blog : blogs) {
+                ElasticsearchClient client = ElasticSearchUtil.client;
+                DeleteResponse response;
+                try {
+                    response = client.delete(d -> d.index("blogs").id(blog.getBlogId().toString()));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                // 如果索引删除失败则回滚
+                if (!response.result().equals(DELETED)) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+                }
+            }
+        }
+        // 数据库删除
         blogMapper.deleteAllOfMenu(menuId);
+
         return Result.ok(null);
     }
 

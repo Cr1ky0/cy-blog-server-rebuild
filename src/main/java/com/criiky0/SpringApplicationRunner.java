@@ -21,8 +21,11 @@ public class SpringApplicationRunner {
     public MybatisPlusInterceptor mybatisPlusInterceptor(){
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
 
+        // 分页
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor());
+        // 乐观锁
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        // 防全局删除
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
 
         return interceptor;

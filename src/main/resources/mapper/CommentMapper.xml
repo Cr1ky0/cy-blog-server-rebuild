@@ -24,4 +24,19 @@
         version,active,belong_comment_id,
         user_id,blog_id
     </sql>
+
+    <select id="selectTopCommentDTOs" resultType="commentDTO">
+        select *
+        from comment
+        where blog_id = #{blogId}
+          and belong_comment_id is null
+          and deleted = 0;
+    </select>
+
+    <select id="selectSubComment" resultType="commentDTO">
+        select *
+        from comment
+        where belong_comment_id = #{commentId}
+          and deleted = 0;
+    </select>
 </mapper>

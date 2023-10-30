@@ -2,6 +2,9 @@ package com.criiky0.mapper;
 
 import com.criiky0.pojo.Comment;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.criiky0.pojo.dto.CommentDTO;
+
+import java.util.List;
 
 /**
 * @author criiky0
@@ -11,6 +14,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface CommentMapper extends BaseMapper<Comment> {
 
+    List<CommentDTO> selectTopCommentDTOs(Long blogId);
+
+    List<CommentDTO> selectSubComment(Long commentId);
 }
 
 

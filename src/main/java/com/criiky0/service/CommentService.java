@@ -2,9 +2,12 @@ package com.criiky0.service;
 
 import com.criiky0.pojo.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.criiky0.pojo.dto.CommentDTO;
 import com.criiky0.utils.Result;
+import com.criiky0.utils.ResultCodeEnum;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
 * @author criiky0
@@ -14,4 +17,10 @@ import java.util.HashMap;
 public interface CommentService extends IService<Comment> {
 
     Result<HashMap<String,Comment>> addComment(Comment comment);
+
+    List<CommentDTO> findSubComment(CommentDTO rootComment);
+
+    Result<HashMap<String, List<CommentDTO>>> getAllCommentOfBlog(Long blogId);
+
+    Result<ResultCodeEnum> deleteAllOfBlog(Long blogId);
 }

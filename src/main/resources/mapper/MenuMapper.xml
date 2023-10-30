@@ -17,18 +17,6 @@
         <result property="userId" column="user_id" jdbcType="BIGINT"/>
     </resultMap>
 
-    <resultMap id="menuDTOResultMap" type="menuDTO">
-        <id property="menuId" column="menu_id"/>
-        <result property="title" column="title"/>
-        <result property="icon" column="icon"/>
-        <result property="color" column="color"/>
-        <result property="level" column="level"/>
-        <result property="sort" column="sort"/>
-        <result property="belongMenuId" column="belong_menu_id"/>
-        <result property="userId" column="user_id"/>
-        <collection property="subMenu" ofType="menuDTO" resultMap="menuDTOResultMap"/>
-    </resultMap>
-
     <sql id="Base_Column_List">
         menu_id,title,icon,
         color,level,sort,

@@ -5,7 +5,6 @@ import co.elastic.clients.elasticsearch.core.DeleteResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.mapper.MenuMapper;
@@ -26,8 +25,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
 
 /**
  * @author criiky0
@@ -194,5 +192,5 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         map.put("totalSize",blogPage.getTotal());
         return Result.ok(map);
     }
-    
+
 }

@@ -306,8 +306,8 @@
    ```
    /criiky0
    GET
-   请求参数
-   ?page=&size=
+   请求参数(带collected参数并为true表示查询收藏的blog)
+   ?page=&size=&collected=false
    返回参数
    {
    	"totalSize": 12,
@@ -347,6 +347,22 @@
    	}
    }
    ```
+8. 获取收藏的博客
+
+   ```
+   /criiky0/collected
+   GET
+   返回参数
+   {
+       collectedBlogs:[
+           {
+               blogId,
+               title
+           }
+       ]
+   }
+   ```
+
 
 ## Comment模块
 

@@ -2,6 +2,7 @@ package com.criiky0.controller;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.criiky0.pojo.Blog;
+import com.criiky0.pojo.dto.CollectedBlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.utils.Result;
@@ -113,19 +114,20 @@ public class BlogController {
     }
 
     /**
-     * 获取博客分页数据
-     * 这里获取的是我自己的博客
+     * 获取博客分页数据 这里获取的是我自己的博客
+     * 
      * @param page
      * @param size
      * @return
      */
     @GetMapping("/criiky0")
     public Result<HashMap<String, Object>> getBlogPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
-        @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        @RequestParam(value = "size", defaultValue = "10") Integer size,
+        @RequestParam(value = "collected", defaultValue = "false") Boolean collected) {
         if (page <= 0 || size <= 0) {
             return Result.build(null, ResultCodeEnum.PARAM_ERROR);
         }
-        return blogService.getBlogPage(page, size);
+        return blogService.getBlogPageOfCriiky0(page, size,collected);
     }
 
     /**
@@ -180,5 +182,15 @@ public class BlogController {
             }
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
+
+    /**
+     * 查询criiky0的收藏列表
+     * 
+     * @return
+     */
+    @GetMapping("/criiky0/collected")
+    public Result<HashMap<String, List<CollectedBlogDTO>>> getCollectedBlogOfCriiky0() {
+        return blogService.getCollectedListOfCriiky0();
     }
 }

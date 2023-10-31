@@ -35,4 +35,12 @@
         update blog set deleted = 1
             where menu_id = #{menuId};
     </update>
+
+    <select id="selectCollectedBlogDTO" resultType="collectedBlogDTO">
+        select blog_id, title
+        from blog
+        where user_id = #{userId}
+          and collected = true
+          and deleted = 0;
+    </select>
 </mapper>

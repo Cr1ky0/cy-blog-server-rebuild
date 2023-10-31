@@ -14,6 +14,7 @@ import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.BlogDoc;
 import com.criiky0.pojo.Menu;
 import com.criiky0.pojo.User;
+import com.criiky0.pojo.dto.CollectedBlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.mapper.BlogMapper;
@@ -212,18 +213,33 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
-    public Result<HashMap<String, Object>> getBlogPage(Integer page, Integer size) {
+    public Result<HashMap<String, Object>> getBlogPageOfCriiky0(Integer page, Integer size, Boolean collected) {
         // 获取我个人信息
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
+        // wrapper
+        LambdaQueryWrapper<Blog> wrapper = new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, user.getUserId());
+        if(collected){
+            wrapper.eq(Blog::getCollected,true);
+        }
         Page<Blog> myPage = new Page<>(page, size);
         Page<Blog> blogPage =
-            blogMapper.selectPage(myPage, new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, user.getUserId()));
+            blogMapper.selectPage(myPage, wrapper);
         HashMap<String, Object> map = new HashMap<>();
         map.put("records", blogPage.getRecords());
         map.put("currentPage", blogPage.getCurrent());
         map.put("pageSize", blogPage.getSize());
         map.put("totalPage", blogPage.getPages());
         map.put("totalSize", blogPage.getTotal());
+        return Result.ok(map);
+    }
+
+    @Override
+    public Result<HashMap<String, List<CollectedBlogDTO>>> getCollectedListOfCriiky0() {
+        // 获取我个人信息
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
+        List<CollectedBlogDTO> dtos = blogMapper.selectCollectedBlogDTO(user.getUserId());
+        HashMap<String, List<CollectedBlogDTO>> map = new HashMap<>();
+        map.put("collectedBlogs", dtos);
         return Result.ok(map);
     }
 

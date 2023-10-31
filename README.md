@@ -301,10 +301,10 @@
    ?menu_id=
    ```
 
-6. 博客分页
+6. 博客分页(criiky0)
 
    ```
-   /page
+   /criiky0
    GET
    请求参数
    ?page=&size=

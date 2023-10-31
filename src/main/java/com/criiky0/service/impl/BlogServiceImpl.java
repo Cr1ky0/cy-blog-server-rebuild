@@ -9,9 +9,11 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.mapper.MenuMapper;
+import com.criiky0.mapper.UserMapper;
 import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.BlogDoc;
 import com.criiky0.pojo.Menu;
+import com.criiky0.pojo.User;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.mapper.BlogMapper;
@@ -41,6 +43,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
 
     private MenuMapper menuMapper;
 
+    private UserMapper userMapper;
+
     private final co.elastic.clients.elasticsearch._types.Result CREATED =
         co.elastic.clients.elasticsearch._types.Result.Created;
 
@@ -51,13 +55,14 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         co.elastic.clients.elasticsearch._types.Result.Updated;
 
     @Autowired
-    public BlogServiceImpl(BlogMapper blogMapper, MenuMapper menuMapper) {
+    public BlogServiceImpl(BlogMapper blogMapper, MenuMapper menuMapper, UserMapper userMapper) {
         this.blogMapper = blogMapper;
         this.menuMapper = menuMapper;
+        this.userMapper = userMapper;
     }
 
     @Override
-    public Result<HashMap<String, Blog>> addBlog(Blog blog){
+    public Result<HashMap<String, Blog>> addBlog(Blog blog) {
         Menu menu = menuMapper.selectById(blog.getMenuId());
         if (menu == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
@@ -208,8 +213,11 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
 
     @Override
     public Result<HashMap<String, Object>> getBlogPage(Integer page, Integer size) {
+        // 获取我个人信息
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
         Page<Blog> myPage = new Page<>(page, size);
-        Page<Blog> blogPage = blogMapper.selectPage(myPage, null);
+        Page<Blog> blogPage =
+            blogMapper.selectPage(myPage, new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, user.getUserId()));
         HashMap<String, Object> map = new HashMap<>();
         map.put("records", blogPage.getRecords());
         map.put("currentPage", blogPage.getCurrent());

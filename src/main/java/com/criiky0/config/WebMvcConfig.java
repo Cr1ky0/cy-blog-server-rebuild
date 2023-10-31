@@ -31,7 +31,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/blog/**", "/api/menu/**","/api/comment/**",
                     "/api/oss/**")
             .excludePathPatterns("/api/menu/criiky0", "/api/menu/{id}",
-                    "/api/blog/page", "/api/blog/single/**","/api/blog/browse",
+                    "/api/blog/criiky0", "/api/blog/single/**","/api/blog/browse",
                     "/api/comment/post","/api/comment/browse","/api/comment/curblog","/api/comment/single/**");
     }
 }

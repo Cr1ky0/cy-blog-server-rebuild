@@ -114,12 +114,12 @@ public class BlogController {
 
     /**
      * 获取博客分页数据
-     * 
+     * 这里获取的是我自己的博客
      * @param page
      * @param size
      * @return
      */
-    @GetMapping("/page")
+    @GetMapping("/criiky0")
     public Result<HashMap<String, Object>> getBlogPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "10") Integer size) {
         if (page <= 0 || size <= 0) {

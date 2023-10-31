@@ -14,7 +14,7 @@ import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.BlogDoc;
 import com.criiky0.pojo.Menu;
 import com.criiky0.pojo.User;
-import com.criiky0.pojo.dto.CollectedBlogDTO;
+import com.criiky0.pojo.dto.BlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.mapper.BlogMapper;
@@ -234,13 +234,22 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
-    public Result<HashMap<String, List<CollectedBlogDTO>>> getCollectedListOfCriiky0() {
+    public Result<HashMap<String, List<BlogDTO>>> getCollectedListOfCriiky0() {
         // 获取我个人信息
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
-        List<CollectedBlogDTO> dtos = blogMapper.selectCollectedBlogDTO(user.getUserId());
-        HashMap<String, List<CollectedBlogDTO>> map = new HashMap<>();
+        List<BlogDTO> dtos = blogMapper.selectCollectedBlogDTO(user.getUserId());
+        HashMap<String, List<BlogDTO>> map = new HashMap<>();
         map.put("collectedBlogs", dtos);
         return Result.ok(map);
     }
 
+    @Override
+    public Result<HashMap<String, List<BlogDTO>>> getTimeLineOfCriiky0() {
+        // 获取我个人信息
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
+        List<BlogDTO> dtos = blogMapper.selectTimeLine(user.getUserId());
+        HashMap<String, List<BlogDTO>> map = new HashMap<>();
+        map.put("timeline", dtos);
+        return Result.ok(map);
+    }
 }

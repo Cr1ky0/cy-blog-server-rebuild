@@ -362,6 +362,21 @@
        ]
    }
    ```
+9. 获取博客timeline
+
+   ```
+   /criiky0/timeline
+   GET
+   返回参数
+   timeline:[
+           {
+               blogId,
+               title,
+               createAt
+           }
+       ]
+   ```
+
 
 
 ## Comment模块

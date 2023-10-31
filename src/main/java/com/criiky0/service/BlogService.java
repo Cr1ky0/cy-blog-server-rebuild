@@ -2,7 +2,7 @@ package com.criiky0.service;
 
 import com.criiky0.pojo.Blog;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.criiky0.pojo.dto.CollectedBlogDTO;
+import com.criiky0.pojo.dto.BlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
@@ -27,5 +27,7 @@ public interface BlogService extends IService<Blog> {
 
     Result<HashMap<String,Object>> getBlogPageOfCriiky0(Integer page, Integer size,Boolean collected);
 
-    Result<HashMap<String, List<CollectedBlogDTO>>> getCollectedListOfCriiky0();
+    Result<HashMap<String, List<BlogDTO>>> getCollectedListOfCriiky0();
+
+    Result<HashMap<String, List<BlogDTO>>> getTimeLineOfCriiky0();
 }

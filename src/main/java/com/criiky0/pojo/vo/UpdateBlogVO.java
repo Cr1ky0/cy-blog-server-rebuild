@@ -1,5 +1,6 @@
 package com.criiky0.pojo.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -21,7 +22,7 @@ public class UpdateBlogVO {
 
     private Boolean collected;
 
-    @Future
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateAt;
 
     private Long menuId;

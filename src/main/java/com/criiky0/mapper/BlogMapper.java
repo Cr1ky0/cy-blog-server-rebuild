@@ -2,7 +2,7 @@ package com.criiky0.mapper;
 
 import com.criiky0.pojo.Blog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.criiky0.pojo.dto.CollectedBlogDTO;
+import com.criiky0.pojo.dto.BlogDTO;
 
 import java.util.List;
 
@@ -28,7 +28,9 @@ public interface BlogMapper extends BaseMapper<Blog> {
      */
     int deleteAllOfMenu(Long menuId);
 
-    List<CollectedBlogDTO> selectCollectedBlogDTO(Long userId);
+    List<BlogDTO> selectCollectedBlogDTO(Long userId);
+
+    List<BlogDTO> selectTimeLine(Long userId);
 }
 
 

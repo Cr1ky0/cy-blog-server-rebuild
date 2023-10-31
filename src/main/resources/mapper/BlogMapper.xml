@@ -36,11 +36,19 @@
             where menu_id = #{menuId};
     </update>
 
-    <select id="selectCollectedBlogDTO" resultType="collectedBlogDTO">
-        select blog_id, title
+    <select id="selectCollectedBlogDTO" resultType="blogDTO">
+        select blog_id, title, create_at
         from blog
         where user_id = #{userId}
           and collected = true
           and deleted = 0;
+    </select>
+
+    <select id="selectTimeLine" resultType="blogDTO">
+        select blog_id, title, create_at
+        from blog
+        where user_id = #{userId}
+        and  deleted = 0
+        order by create_at desc;
     </select>
 </mapper>

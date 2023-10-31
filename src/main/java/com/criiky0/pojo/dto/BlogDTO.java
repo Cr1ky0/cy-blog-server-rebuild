@@ -2,9 +2,13 @@ package com.criiky0.pojo.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-public class CollectedBlogDTO {
+public class BlogDTO {
     private Long blogId;
 
     private String title;
+
+    private Date createAt;
 }

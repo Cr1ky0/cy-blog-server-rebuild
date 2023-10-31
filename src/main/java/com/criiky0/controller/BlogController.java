@@ -2,7 +2,7 @@ package com.criiky0.controller;
 
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.criiky0.pojo.Blog;
-import com.criiky0.pojo.dto.CollectedBlogDTO;
+import com.criiky0.pojo.dto.BlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.utils.Result;
@@ -88,7 +88,7 @@ public class BlogController {
     public Result<HashMap<String, Blog>> updateBlog(@Validated @RequestBody UpdateBlogVO updateBlogVO,
         BindingResult result, @RequestAttribute("userid") Long userId) {
         if (result.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
         }
         // 检验参数
         List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
@@ -132,7 +132,6 @@ public class BlogController {
 
     /**
      * 更新浏览数据
-     * 
      * @param blogId
      * @param like
      * @param plus
@@ -186,11 +185,19 @@ public class BlogController {
 
     /**
      * 查询criiky0的收藏列表
-     * 
      * @return
      */
     @GetMapping("/criiky0/collected")
-    public Result<HashMap<String, List<CollectedBlogDTO>>> getCollectedBlogOfCriiky0() {
+    public Result<HashMap<String, List<BlogDTO>>> getCollectedBlogOfCriiky0() {
         return blogService.getCollectedListOfCriiky0();
+    }
+
+    /**
+     * 查询criiky0的TimeLine
+     * @return
+     */
+    @GetMapping("/criiky0/timeline")
+    public Result<HashMap<String,List<BlogDTO>>> getTimeLineOfCriiky0(){
+        return blogService.getTimeLineOfCriiky0();
     }
 }

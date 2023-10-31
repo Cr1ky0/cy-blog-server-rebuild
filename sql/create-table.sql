@@ -24,6 +24,7 @@ create table if not exists `blog` (
 	`content` text null comment '文章内容',
 	`likes` int unsigned default 0 comment '文章点赞',
 	`views` int unsigned default 0 comment '文章浏览',
+	`collected` boolean default false comment '是否被收藏',
 	`create_at` datetime default now() comment '创建时间',
 	`update_at` datetime default now() comment '更新时间',
 	`sort` int unsigned default 0 comment '排序字段',

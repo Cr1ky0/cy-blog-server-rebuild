@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-
 /**
  * @author criiky0
  * @description 针对表【blog】的数据库操作Service实现
@@ -58,7 +57,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
-    public Result<HashMap<String, Blog>> addBlog(Blog blog) {
+    public Result<HashMap<String, Blog>> addBlog(Blog blog){
         Menu menu = menuMapper.selectById(blog.getMenuId());
         if (menu == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
@@ -83,12 +82,14 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 response = client.index(i -> i.index("blogs").id(blog.getBlogId().toString())
                     .document(new BlogDoc(blog.getTitle(), blog.getContent())));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                // 失败回滚
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
             }
             // 如果加入ES索引失败则回滚
             if (!response.result().equals(CREATED)) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+                return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
             }
             HashMap<String, Blog> map = new HashMap<>();
             map.put("blog", blog);
@@ -116,12 +117,13 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
             try {
                 response = client.delete(d -> d.index("blogs").id(blogId.toString()));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
             }
             // 如果索引删除失败则回滚
             if (!response.result().equals(DELETED)) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+                return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
             }
             return Result.ok(null);
         }
@@ -142,7 +144,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
             .set(updateBlogVO.getTitle() != null, Blog::getTitle, updateBlogVO.getTitle())
             .set(updateBlogVO.getContent() != null, Blog::getContent, updateBlogVO.getContent())
             .set(updateBlogVO.getUpdateAt() != null, Blog::getUpdateAt, updateBlogVO.getUpdateAt())
-            .set(updateBlogVO.getMenuId() != null, Blog::getMenuId, updateBlogVO.getMenuId());
+            .set(updateBlogVO.getMenuId() != null, Blog::getMenuId, updateBlogVO.getMenuId())
+            .set(updateBlogVO.getCollected() != null, Blog::getCollected, updateBlogVO.getCollected());
         int update = blogMapper.update(null, updateWrapper);
         if (update > 0) {
             Blog updatedBlog = blogMapper.selectById(updateBlogVO.getBlogId());
@@ -154,15 +157,17 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                     response = client.update(u -> u.index("blogs").id(updatedBlog.getBlogId().toString())
                         .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent())), BlogDoc.class);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
                 }
                 if (!response.result().equals(UPDATED)) {
-                    return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
                 }
-                HashMap<String, Blog> map = new HashMap<>();
-                map.put("updatedBlog", updatedBlog);
-                return Result.ok(map);
             }
+            HashMap<String, Blog> map = new HashMap<>();
+            map.put("updatedBlog", updatedBlog);
+            return Result.ok(map);
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
     }
@@ -178,19 +183,20 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         }
         // ES批量删除
         List<Blog> blogs = blogMapper.selectList(new LambdaQueryWrapper<Blog>().eq(Blog::getMenuId, menuId));
-        if(!blogs.isEmpty()) {
+        if (!blogs.isEmpty()) {
             for (Blog blog : blogs) {
                 ElasticsearchClient client = ElasticSearchUtil.client;
                 DeleteResponse response;
                 try {
                     response = client.delete(d -> d.index("blogs").id(blog.getBlogId().toString()));
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                    return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
                 }
                 // 如果索引删除失败则回滚
                 if (!response.result().equals(DELETED)) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                    return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+                    return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
                 }
             }
         }
@@ -201,15 +207,15 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
-    public Result<HashMap<String,Object>> getBlogPage(Integer page, Integer size) {
+    public Result<HashMap<String, Object>> getBlogPage(Integer page, Integer size) {
         Page<Blog> myPage = new Page<>(page, size);
         Page<Blog> blogPage = blogMapper.selectPage(myPage, null);
         HashMap<String, Object> map = new HashMap<>();
-        map.put("records",blogPage.getRecords());
-        map.put("currentPage",blogPage.getCurrent());
-        map.put("pageSize",blogPage.getSize());
-        map.put("totalPage",blogPage.getPages());
-        map.put("totalSize",blogPage.getTotal());
+        map.put("records", blogPage.getRecords());
+        map.put("currentPage", blogPage.getCurrent());
+        map.put("pageSize", blogPage.getSize());
+        map.put("totalPage", blogPage.getPages());
+        map.put("totalSize", blogPage.getTotal());
         return Result.ok(map);
     }
 

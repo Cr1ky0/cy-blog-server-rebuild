@@ -29,6 +29,8 @@ public class Blog implements Serializable {
 
     private Integer views;
 
+    private Boolean collected;
+
     private Date createAt;
 
     private Date updateAt;

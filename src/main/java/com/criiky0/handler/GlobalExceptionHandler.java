@@ -2,9 +2,13 @@ package com.criiky0.handler;
 
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.HandlerExceptionResolver;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
 
@@ -27,4 +31,5 @@ public class GlobalExceptionHandler {
         errorMap.put("error", e.getMessage());
         return Result.build(errorMap, ResultCodeEnum.OCCUR_EXCEPTION);
     }
+
 }

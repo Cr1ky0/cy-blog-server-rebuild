@@ -19,6 +19,8 @@ public class UpdateBlogVO {
     @Length(min=1)
     private String content;
 
+    private Boolean collected;
+
     @Future
     private Date updateAt;
 

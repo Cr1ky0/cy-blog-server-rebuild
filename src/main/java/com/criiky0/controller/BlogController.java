@@ -90,8 +90,8 @@ public class BlogController {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
         // 检验参数
-        List<Object> paramList =
-            Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(), updateBlogVO.getMenuId());
+        List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
+            updateBlogVO.getMenuId(), updateBlogVO.getUpdateAt(), updateBlogVO.getCollected());
         boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
         if (isAllNull) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);

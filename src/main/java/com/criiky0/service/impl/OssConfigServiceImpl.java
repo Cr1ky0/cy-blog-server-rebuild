@@ -70,7 +70,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         DefaultCredentialProvider credentialsProvider = CredentialsProviderFactory
             .newDefaultCredentialProvider(config.getAccessKeyId(), config.getAccessKeySecret());
         // host
-        String host = config.getEndpoint() + "." + config.getBucket();
+        String host = "https://" + config.getBucket() + "." + config.getEndpoint();
         // 创建OSSClient实例。
         OSS ossClient = new OSSClientBuilder().build(config.getEndpoint(), credentialsProvider);
         try {

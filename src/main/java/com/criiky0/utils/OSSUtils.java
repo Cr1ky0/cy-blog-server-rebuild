@@ -173,7 +173,7 @@ public class OSSUtils {
     /**
      * 服务器响应结果
      */
-    private static void response(HttpServletRequest request, HttpServletResponse response, String results) throws IOException {
+    public static void response(HttpServletRequest request, HttpServletResponse response, String results) throws IOException {
         String callbackFunName = request.getParameter("callback");
         if (callbackFunName == null || callbackFunName.equalsIgnoreCase(""))
             response.getWriter().println(results);

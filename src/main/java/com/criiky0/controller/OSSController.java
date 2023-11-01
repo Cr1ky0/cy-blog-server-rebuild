@@ -1,20 +1,30 @@
 package com.criiky0.controller;
 
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.common.auth.CredentialsProviderFactory;
+import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.common.utils.BinaryUtil;
+import com.aliyun.oss.model.MatchMode;
+import com.aliyun.oss.model.PolicyConditions;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.criiky0.pojo.OssConfig;
 import com.criiky0.service.OssConfigService;
 import com.criiky0.utils.OSSUtils;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
@@ -29,7 +39,7 @@ public class OSSController {
 
     /**
      * 添加config
-     * 
+     *
      * @param ossConfig
      * @return
      */
@@ -40,7 +50,7 @@ public class OSSController {
 
     /**
      * 获取config
-     * 
+     *
      * @return
      */
     @GetMapping
@@ -59,8 +69,8 @@ public class OSSController {
      * @return
      */
     @GetMapping("/policy")
-    public Result<Map<String, String>> getPolicy() {
-        return ossConfigService.getPolicy();
+    public Result<Map<String,String>> getPolicy() {
+       return ossConfigService.getPolicy();
     }
 
     /**

@@ -19,6 +19,9 @@ public class Image implements Serializable {
     private Long imageId;
 
     @NotBlank
+    private String fileName;
+
+    @NotBlank
     private String endpoint;
 
     @NotBlank

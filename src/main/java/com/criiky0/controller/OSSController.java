@@ -50,7 +50,6 @@ public class OSSController {
 
     /**
      * 获取config
-     *
      * @return
      */
     @GetMapping
@@ -74,8 +73,8 @@ public class OSSController {
     }
 
     /**
-     * 接收OSS发送的POST请求
-     * 
+     * 接收OSS发送的POST请求（上传回调）
+     * 需要上线后的外网链接才能访问回调，开发阶段无法使用
      * @param request
      * @param response
      * @throws IOException

@@ -22,6 +22,10 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        // CORS预检放行
+        if("OPTIONS".equals(request.getMethod().toUpperCase())) {
+            return true;
+        }
         String bearer = request.getHeader("Authorization");
 
         // 验证token是否存在

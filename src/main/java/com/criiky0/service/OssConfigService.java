@@ -6,6 +6,7 @@ import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
 * @author 50309
@@ -15,4 +16,6 @@ import java.util.HashMap;
 public interface OssConfigService extends IService<OssConfig> {
 
     Result<HashMap<String,OssConfig>> addConfig(OssConfig ossConfig);
+
+    Result<Map<String,String>> getPolicy();
 }

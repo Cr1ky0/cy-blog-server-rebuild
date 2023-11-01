@@ -27,6 +27,10 @@ public class LoginProtectInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
         throws Exception {
 
+        // CORS预检放行
+        if("OPTIONS".equals(request.getMethod().toUpperCase())) {
+            return true;
+        }
         String bearer = request.getHeader("Authorization");
 
         // 错误相应信息

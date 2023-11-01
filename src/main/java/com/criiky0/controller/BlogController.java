@@ -19,7 +19,6 @@ import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/blog")
-@CrossOrigin
 public class BlogController {
 
     private BlogService blogService;

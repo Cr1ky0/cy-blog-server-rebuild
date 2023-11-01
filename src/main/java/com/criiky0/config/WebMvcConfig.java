@@ -3,6 +3,7 @@ package com.criiky0.config;
 import com.criiky0.interceptor.RoleProtectInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,17 +22,19 @@ public class WebMvcConfig implements WebMvcConfigurer {
         this.roleProtectInterceptor = roleProtectInterceptor;
     }
 
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginProtectInterceptor)
                 .addPathPatterns("/api/user/info", "/api/user/avatar");
 
         registry.addInterceptor(roleProtectInterceptor)
-            .addPathPatterns("/api/user/role", "/api/menu/**",
-                    "/api/blog/**", "/api/menu/**","/api/comment/**",
-                    "/api/oss/**")
-            .excludePathPatterns("/api/menu/criiky0", "/api/menu/{id}",
-                    "/api/blog/criiky0/**", "/api/blog/single/**","/api/blog/browse",
-                    "/api/comment/post","/api/comment/browse","/api/comment/curblog","/api/comment/single/**");
+            .addPathPatterns("/api/user/role", "/api/menu/**", "/api/blog/**", "/api/menu/**", "/api/comment/**",
+                "/api/oss/**", "/api/image/**")
+            .excludePathPatterns("/api/menu/criiky0", "/api/menu/{id}", "/api/blog/criiky0/**", "/api/blog/single/**",
+                "/api/blog/browse", "/api/comment/post", "/api/comment/browse", "/api/comment/curblog",
+                "/api/comment/single/**", "/api/oss/callback");
     }
+
+
 }

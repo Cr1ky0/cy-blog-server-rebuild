@@ -3,18 +3,20 @@ package com.criiky0.pojo;
 import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
+import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
- * @TableName oss_config
+ * @TableName image
  */
-@TableName(value ="oss_config")
+@TableName(value ="image")
 @Data
-public class OssConfig implements Serializable {
+public class Image implements Serializable {
     @TableId
-    private Long id;
+    private Long imageId;
 
     @NotBlank
     private String endpoint;
@@ -22,20 +24,17 @@ public class OssConfig implements Serializable {
     @NotBlank
     private String bucket;
 
-    @NotBlank
-    private String accessKeyId;
+    private Date uploadAt;
 
-    @NotBlank
-    private String accessKeySecret;
-
-    private String dir;
-
-    private String callbackUrl;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date photoTime;
 
     @Version
     private Integer version;
 
     private Integer deleted;
+
+    private Long userId;
 
     private static final long serialVersionUID = 1L;
 }

@@ -28,7 +28,6 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/api/user")
-@CrossOrigin
 @Slf4j
 public class UserController {
 

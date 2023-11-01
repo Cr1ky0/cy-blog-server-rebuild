@@ -16,7 +16,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/menu")
-@CrossOrigin
 @Slf4j
 public class MenuController {
 

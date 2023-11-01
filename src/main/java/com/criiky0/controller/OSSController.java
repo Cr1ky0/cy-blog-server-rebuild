@@ -88,11 +88,11 @@ public class OSSController {
             String filename = request.getParameter("filename");
             // 获取oss信息
             OssConfig config = ossConfigService.getOne(new QueryWrapper<>());
+            // 添加到数据库
             Image image = new Image();
             image.setFileName(filename);
             image.setBucket(config.getBucket());
             image.setEndpoint(config.getEndpoint());
-            // 添加到数据库
             boolean save = imageService.save(image);
             if (save)
                 OSSUtils.response(request, response, "{\"Status\":\"OK\"}", HttpServletResponse.SC_OK);

@@ -14,7 +14,9 @@ import java.util.List;
  */
 public interface ImageService extends IService<Image> {
 
-    Result<ResultCodeEnum> deletePhoto(Long imageId);
+    Result<ResultCodeEnum> deletePhoto(Long imageId,Long userId);
 
     Result<ResultCodeEnum> uploadMany(List<Image> images, Long userId);
+
+    Result<ResultCodeEnum> deletePhotos(List<Long> list,Long userId);
 }

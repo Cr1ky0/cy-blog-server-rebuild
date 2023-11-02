@@ -8,6 +8,8 @@ import com.criiky0.service.OssConfigService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +33,8 @@ public class ImageController {
     }
 
     /**
-     * 上传单张
+     * 上传单张photo
+     * 
      * @param image
      * @param userId
      * @return
@@ -73,11 +76,26 @@ public class ImageController {
      * @return
      */
     @DeleteMapping
-    public Result<ResultCodeEnum> deletePhoto(@RequestParam("image_id") Long imageId) {
+    public Result<ResultCodeEnum> deletePhoto(@RequestParam("image_id") Long imageId,
+        @RequestAttribute("userid") Long userId) {
         Image image = imageService.getById(imageId);
         if (image == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
-        return imageService.deletePhoto(imageId);
+        return imageService.deletePhoto(imageId,userId);
+    }
+
+    /**
+     * 批量删除
+     * @param idList
+     * @param userId
+     * @return
+     */
+    @DeleteMapping("/many")
+    public Result<ResultCodeEnum> deletePhotos(@RequestBody List<Long> idList,@RequestAttribute("userid") Long userId) {
+        if (idList.isEmpty()) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+        }
+        return imageService.deletePhotos(idList,userId);
     }
 }

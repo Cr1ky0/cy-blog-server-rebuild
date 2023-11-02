@@ -1,10 +1,10 @@
 # Criik-Blog重构
 
 * 包含登录拦截器、参数校验、日志系统、统一异常处理
-* ~2023-10-30：基本完成用户、博客（ES附加）、评论、菜单模块
+* ~2023-10-30:基本完成用户、博客（ES附加）、评论、菜单模块
+* ~2023-11-02:添加OSS设置、OSS图像上传、删除等功能，完善其他模块
 
 # 模块API
-
 ## User模块
 
 ### 根路径
@@ -24,9 +24,10 @@
    ``````
 
 
-2. 登录
 
-   ```java
+2. 登录
+3. 
+   ```
    /login
    Post
    请求参数：
@@ -57,7 +58,7 @@
 
 4. 获取用户信息（通过token）
 
-   ```java
+   ```
    /info
    Get
    返回参数
@@ -74,7 +75,7 @@
 
 5. 上传头像（通过token）
 
-   ```java
+   ```
    /avatar
    Post
    请求参数
@@ -121,6 +122,7 @@
    }
    ```
 
+
 ## Menu模块
 
 ### 根路径
@@ -133,7 +135,7 @@
 
 1. 添加菜单
 
-   ```java
+   ```
    /
    POST
    请求参数
@@ -217,7 +219,7 @@
    }
    ```
 
-## Blog模块
+##  Blog模块
 
 ### 根路径
 
@@ -280,7 +282,7 @@
    	blogId,
    	title,
    	content,
-    collected,
+   	collected,
    	updateAt,
    	menuId
    }
@@ -301,7 +303,7 @@
    ?menu_id=
    ```
 
-6. 博客分页(criiky0)
+6. 博客分页（criiky0）
 
    ```
    /criiky0
@@ -347,6 +349,7 @@
    	}
    }
    ```
+
 8. 获取收藏的博客
 
    ```
@@ -354,14 +357,16 @@
    GET
    返回参数
    {
-       collectedBlogs:[
-           {
-               blogId,
-               title
-           }
-       ]
+   	collectedBlogs:[
+   		{
+   			blogId,
+   			title,
+   			createAt
+   		}
+   	]
    }
    ```
+
 9. 获取博客timeline
 
    ```
@@ -369,12 +374,12 @@
    GET
    返回参数
    timeline:[
-           {
-               blogId,
-               title,
-               createAt
-           }
-       ]
+   		{
+   			blogId,
+   			title,
+   			createAt
+   		}
+   	]
    ```
 
 
@@ -475,15 +480,17 @@
    }
    ```
 
-## OSSConfig
 
-### 根路径
+
+### OSSConfig
+
+#### 根路径
 
 ```
 /api/oss
 ```
 
-### API
+#### API
 
 1. 添加Config
 
@@ -495,15 +502,109 @@
    	endpoint,
    	bucket,
    	accessKeyId,
-   	accessKeySecret
+   	accessKeySecret,
+   	dir, // 可选
+   	callbackUrl // 可选
    }
    ```
+
 2. 获取Config
 
-    ```
-    /
-    GET
-    ```
+   ```
+   /
+   GET
+   ```
+
+3. 获取Policy
+
+   ```
+   /policy
+   GET
+   返回参数
+   {
+   	"accessid":
+   	"policy",
+   	signature,
+   	dir,
+   	host,
+   	expire,
+   	callback
+   }
+   ```
+
+4. 上传回调（OSS服务器调用，同时添加照片至应用服务器）
+
+   ```
+   /callback
+   POST
+   ```
+
+
+
+## Image模块
+
+### 根路径
+
+```
+/api/image
+```
+
+### API
+
+1. 添加照片
+
+   ```
+   /
+   POST
+   请求参数
+   {
+   	fileName,
+   	photoTime, // 可选
+   }
+   返回参数
+   {
+   	image:{
+   		...
+   	}
+   }
+   ```
+
+2. 删除照片
+
+   ```
+   /
+   DELETE
+   请求参数
+   ?image_id=
+   ```
+
+3. 批量上传
+
+   ```
+   /many
+   POST
+   请求参数
+   {
+   	photos:[
+   		{
+   			...
+   		}
+   	]
+   }
+   ```
+
+4. 批量删除
+
+   ```
+   /many
+   DELETE
+   请求参数
+   {
+   	photos:["id1","id2",...]
+   }
+   ```
+
+   
 
 
    

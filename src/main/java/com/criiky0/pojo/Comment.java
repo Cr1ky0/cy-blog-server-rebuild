@@ -20,16 +20,16 @@ public class Comment implements Serializable {
     @TableId
     private Long commentId;
 
-    @NotBlank
+    @NotBlank(message = "评论不能为空！")
     private String content;
 
-    @Min(0)
+    @Min(value = 0,message = "likes最小值为0！")
     private Integer likes;
 
-    @Length(max = 20)
+    @Length(max = 20,message = "username过长！")
     private String username;
 
-    @Length(max = 50)
+    @Length(max = 50,message = "个人简介过长！")
     private String brief;
 
     private Date createAt;
@@ -43,7 +43,7 @@ public class Comment implements Serializable {
 
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "blogId不能为空")
     private Long blogId;
 
     private static final long serialVersionUID = 1L;

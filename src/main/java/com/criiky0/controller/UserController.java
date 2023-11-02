@@ -12,6 +12,7 @@ import com.criiky0.utils.ResultCodeEnum;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -29,6 +30,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping(value = "/api/user")
 @Slf4j
+@Validated
 public class UserController {
 
     private UserService userService;
@@ -45,7 +47,6 @@ public class UserController {
 
     /**
      * 发送验证码
-     * 
      * @param email 发送邮箱
      * @param session session
      * @return
@@ -57,7 +58,12 @@ public class UserController {
         if (exists) {
             return Result.build(null, ResultCodeEnum.EMAIL_USED);
         }
-        Integer code = JavaMailUtil.sendCode(email);
+        Integer code;
+        try {
+             code = JavaMailUtil.sendCode(email);
+        }catch(RuntimeException e){
+            return Result.build(null,400,"邮件发送失败，请检查邮箱是否正确或重试！");
+        }
         HashMap<String, Integer> codeMap = new HashMap<>();
         codeMap.put("code", code);
         // 放入session
@@ -84,11 +90,8 @@ public class UserController {
      * @param session session
      */
     @PostMapping("register")
-    public Result<HashMap<String, String>> register(@Validated @RequestBody RegisterVO data, BindingResult bindingResult,
+    public Result<HashMap<String, String>> register(@Valid @RequestBody RegisterVO data,
                                                     HttpSession session) {
-        if(bindingResult.hasErrors()){
-            return Result.build(null,ResultCodeEnum.PARAM_ERROR);
-        }
         // 验证code
         Integer code = (Integer)session.getAttribute("verify-code");
         if (!Objects.equals(code, data.getCode())) {
@@ -118,7 +121,6 @@ public class UserController {
 
     /**
      * 根据当前token获取用户数据
-     * 
      * @param userId 拦截器解析出来的userId
      */
     @GetMapping("info")
@@ -128,7 +130,6 @@ public class UserController {
 
     /**
      * 上传头像
-     * 
      * @param file blob类型文件
      * @param userId 拦截器附带id
      */
@@ -180,7 +181,6 @@ public class UserController {
 
     /**
      * 获取头像，直接返回图片流
-     * 
      * @param userId 拦截器
      */
     @GetMapping("avatar")
@@ -206,23 +206,18 @@ public class UserController {
 
     /**
      * 更新用户nickname或brief
-     * 
      * @param user 请求体
      * @param userId 拦截器
      */
     @PatchMapping("info")
-    public Result<HashMap<String,UserDTO>> updateUserInfo(@Validated @RequestBody User user, BindingResult bindingResult,
+    public Result<HashMap<String,UserDTO>> updateUserInfo(@RequestBody User user,
         @RequestAttribute("userid") Long userId) {
-        if (bindingResult.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
-        }
         user.setUserId(userId);
         return userService.updateUserInfo(user);
     }
 
     /**
      * 修改用户Role（管理员方法）
-     * 
      * @param user
      */
     @PatchMapping("role")

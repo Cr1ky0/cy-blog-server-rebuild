@@ -44,7 +44,6 @@ public class OSSController {
 
     /**
      * 获取config
-     * 
      * @return
      */
     @GetMapping
@@ -83,7 +82,6 @@ public class OSSController {
         System.out.println("verify result : " + ret);
         System.out.println("OSS Callback Body:" + ossCallbackBody);
         if (ret) {
-            // TODO:图片其他信息上传
             // 获取filename
             String filename = request.getParameter("filename");
             // 获取oss信息

@@ -9,13 +9,13 @@ import java.util.Date;
 
 @Data
 public class UpdateBlogVO {
-    @NotNull
+    @NotNull(message = "博客id不能为空！")
     private Long blogId;
 
-    @Length(min=1,max = 30)
+    @Length(min=1,max = 30,message = "博客标题过长或过短")
     private String title;
 
-    @Length(min=1)
+    @Length(min=1,message = "博客长度过短！")
     private String content;
 
     private Boolean collected;

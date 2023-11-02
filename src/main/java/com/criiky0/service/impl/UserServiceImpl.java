@@ -132,6 +132,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Result<ResultCodeEnum> updateuserRole(User user) {
+        User selectUser = userMapper.selectById(user.getUserId());
+        if(selectUser == null){
+            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
         boolean hasRole = !StringUtils.isEmpty(user.getRole().toString());
         if (!hasRole) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);

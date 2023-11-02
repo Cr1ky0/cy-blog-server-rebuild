@@ -18,13 +18,14 @@ public class Menu implements Serializable {
     @TableId
     private Long menuId;
 
-    @Length(min=1,max=30)
+    @Length(min=1,max=30,message = "title过长或过短！")
+    @NotBlank(message = "菜单标题不能为空")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "icon不能为空")
     private String icon;
 
-    @NotBlank
+    @NotBlank(message = "color不能为空")
     private String color;
 
     private Integer level;

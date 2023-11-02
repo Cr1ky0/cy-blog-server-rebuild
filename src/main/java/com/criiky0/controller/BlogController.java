@@ -32,16 +32,12 @@ public class BlogController {
      * 添加博客（同时添加至ES索引）
      * 
      * @param blog
-     * @param result
      * @param userId
      * @return
      */
     @PostMapping
-    public Result<HashMap<String, Blog>> addBlog(@Validated @RequestBody Blog blog, BindingResult result,
+    public Result<HashMap<String, Blog>> addBlog(@Validated @RequestBody Blog blog,
         @RequestAttribute("userid") Long userId) {
-        if (result.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
-        }
         blog.setUserId(userId);
         return blogService.addBlog(blog);
     }
@@ -79,16 +75,12 @@ public class BlogController {
      * 更新博客
      * 
      * @param updateBlogVO
-     * @param result
      * @param userId
      * @return
      */
     @PatchMapping
     public Result<HashMap<String, Blog>> updateBlog(@Validated @RequestBody UpdateBlogVO updateBlogVO,
-        BindingResult result, @RequestAttribute("userid") Long userId) {
-        if (result.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
-        }
+        @RequestAttribute("userid") Long userId) {
         // 检验参数
         List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
             updateBlogVO.getMenuId(), updateBlogVO.getUpdateAt(), updateBlogVO.getCollected());
@@ -126,11 +118,12 @@ public class BlogController {
         if (page <= 0 || size <= 0) {
             return Result.build(null, ResultCodeEnum.PARAM_ERROR);
         }
-        return blogService.getBlogPageOfCriiky0(page, size,collected);
+        return blogService.getBlogPageOfCriiky0(page, size, collected);
     }
 
     /**
      * 更新浏览数据
+     * 
      * @param blogId
      * @param like
      * @param plus
@@ -184,6 +177,7 @@ public class BlogController {
 
     /**
      * 查询criiky0的收藏列表
+     * 
      * @return
      */
     @GetMapping("/criiky0/collected")
@@ -193,10 +187,11 @@ public class BlogController {
 
     /**
      * 查询criiky0的TimeLine
+     * 
      * @return
      */
     @GetMapping("/criiky0/timeline")
-    public Result<HashMap<String,List<BlogDTO>>> getTimeLineOfCriiky0(){
+    public Result<HashMap<String, List<BlogDTO>>> getTimeLineOfCriiky0() {
         return blogService.getTimeLineOfCriiky0();
     }
 }

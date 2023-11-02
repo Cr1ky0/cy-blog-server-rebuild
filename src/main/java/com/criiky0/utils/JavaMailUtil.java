@@ -67,7 +67,7 @@ public class JavaMailUtil {
         return session;
     }
 
-    public static Integer sendCode(String email) {
+    public static Integer sendCode(String email) throws RuntimeException{
         // 创建Session会话
         Session session = JavaMailUtil.createSession();
 

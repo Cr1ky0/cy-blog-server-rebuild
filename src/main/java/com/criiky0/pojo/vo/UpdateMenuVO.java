@@ -6,9 +6,9 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 public class UpdateMenuVO {
-    @NotNull
+    @NotNull(message = "menuId不能为空！")
     private Long menuId;
-    @Length(min=1,max = 30)
+    @Length(min=1,max = 30,message = "title过长或过短！")
     private String title;
     private String icon;
     private String color;

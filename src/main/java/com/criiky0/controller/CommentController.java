@@ -32,16 +32,11 @@ public class CommentController {
 
     /**
      * 添加评论
-     * 
      * @param comment
-     * @param result
      * @return
      */
     @PostMapping("/post")
-    public Result<HashMap<String, Comment>> addComment(@Validated @RequestBody Comment comment, BindingResult result) {
-        if (result.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
-        }
+    public Result<HashMap<String, Comment>> addComment(@Validated @RequestBody Comment comment) {
         return commentService.addComment(comment);
     }
 

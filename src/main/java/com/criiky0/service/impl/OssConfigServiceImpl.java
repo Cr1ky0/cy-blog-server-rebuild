@@ -77,9 +77,9 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
             long expireTime = 30;
             long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
             Date expiration = new Date(expireEndTime);
-            // PostObject请求最大可支持的文件大小为5 GB，即CONTENT_LENGTH_RANGE为5*1024*1024*1024。
+            // PostObject请求最大可支持的文件大小为500MB，即CONTENT_LENGTH_RANGE为50*1024*1024。
             PolicyConditions policyConds = new PolicyConditions();
-            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 1048576000);
+            policyConds.addConditionItem(PolicyConditions.COND_CONTENT_LENGTH_RANGE, 0, 524288000);
             // dir
             policyConds.addConditionItem(MatchMode.StartWith, PolicyConditions.COND_KEY, config.getDir());
 
@@ -96,7 +96,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
             respMap.put("signature", postSignature);
             respMap.put("dir", config.getDir());
             respMap.put("host", host);
-            respMap.put("expire", String.valueOf(expireEndTime / 1000));
+            respMap.put("expire", String.valueOf(expireEndTime));
 
             // 生成回调
             JSONObject jasonCallback = new JSONObject();

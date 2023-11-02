@@ -30,14 +30,10 @@ public class MenuController {
      * 添加菜单
      * @param menu body
      * @param userId 拦截器附带
-     * @param bindingResult 参数校验
      */
     @PostMapping
-    public Result<HashMap<String, Menu>> addMenu(@Validated @RequestBody Menu menu, BindingResult bindingResult,
+    public Result<HashMap<String, Menu>> addMenu(@Validated @RequestBody Menu menu,
         @RequestAttribute("userid") Long userId) {
-        if (bindingResult.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_ERROR);
-        }
         menu.setUserId(userId);
         return menuService.addMenu(menu);
     }
@@ -80,15 +76,11 @@ public class MenuController {
     /**
      * 更新菜单
      * @param updateMenuVO 可更新belong、title、icon以及color
-     * @param result
      * @param userId
      */
     @PatchMapping
-    public Result<HashMap<String,Menu>> updateMenu(@Validated @RequestBody UpdateMenuVO updateMenuVO, BindingResult result,
+    public Result<HashMap<String,Menu>> updateMenu(@Validated @RequestBody UpdateMenuVO updateMenuVO,
         @RequestAttribute("userid") Long userId) {
-        if (result.hasErrors()) {
-            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
-        }
         List<Object> paramList = Arrays.asList(updateMenuVO.getTitle(),updateMenuVO.getBelongMenuId(),updateMenuVO.getIcon(),updateMenuVO.getColor());
         boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
         if(isAllNull){

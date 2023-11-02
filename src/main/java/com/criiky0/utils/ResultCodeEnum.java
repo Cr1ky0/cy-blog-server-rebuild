@@ -15,10 +15,13 @@ public enum ResultCodeEnum {
     // ES
     ES_OPERATION_ERROR(400,"ES操作失败，事务回滚，请重试或联系管理员！"),
 
+    // OSS
+    OSS_CONFIG_NOT_EXIST(400,"OSS配置不存在，请添加配置后再试！"),
+
     // universal
     OPERATION_ERROR(400, "非法操作！"), UNKNOWN_ERROR(400, "未知错误！"), PARAM_NULL_ERROR(400, "参数为空！"),
-    OCCUR_EXCEPTION(500, "参数非法或服务器内部异常，请重试或联系管理！"), CANNOT_FIND_ERROR(400, "找不到对应实体！"),
-    PARAM_ERROR(400, "提供的参数过长/短或参数过大/小或参数为空或参数不符合规范，请检查后重新提交！");
+    OCCUR_EXCEPTION(400, "参数非法或服务器内部异常，请重试或联系管理！"), CANNOT_FIND_ERROR(400, "找不到对应实体！"),
+    PARAM_ERROR(400, "参数非法，请检查后重新提交！");
 
     private Integer code;
     private String message;

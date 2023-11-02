@@ -19,10 +19,12 @@ public class Blog implements Serializable {
     @TableId
     private Long blogId;
 
-    @Length(min=1,max = 30)
+    @Length(min=1,max = 30,message = "博客标题过长或过短！")
+    @NotBlank(message = "博客标题不能为空")
     private String title;
 
-    @NotBlank
+    @Length(min=1,message = "博客长度过短！")
+    @NotBlank(message = "博客内容不能为空！")
     private String content;
 
     private Integer likes;
@@ -44,7 +46,7 @@ public class Blog implements Serializable {
 
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "所属菜单ID不能为空")
     private Long menuId;
 
     private static final long serialVersionUID = 1L;

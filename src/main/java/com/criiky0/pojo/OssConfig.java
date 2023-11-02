@@ -16,16 +16,16 @@ public class OssConfig implements Serializable {
     @TableId
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "endpoint不能为空！")
     private String endpoint;
 
-    @NotBlank
+    @NotBlank(message = "bucket不能为空！")
     private String bucket;
 
-    @NotBlank
+    @NotBlank(message = "accessKeyId不能为空！")
     private String accessKeyId;
 
-    @NotBlank
+    @NotBlank(message = "accessKeySecret不能为空！")
     private String accessKeySecret;
 
     private String dir;

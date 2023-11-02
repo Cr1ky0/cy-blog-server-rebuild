@@ -7,6 +7,7 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -18,13 +19,11 @@ public class Image implements Serializable {
     @TableId
     private Long imageId;
 
-    @NotBlank
+    @NotBlank(message = "fileName不能为空！")
     private String fileName;
 
-    @NotBlank
     private String endpoint;
 
-    @NotBlank
     private String bucket;
 
     private Date uploadAt;

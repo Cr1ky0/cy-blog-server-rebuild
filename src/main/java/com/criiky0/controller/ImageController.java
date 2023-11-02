@@ -8,8 +8,6 @@ import com.criiky0.service.OssConfigService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +32,6 @@ public class ImageController {
 
     /**
      * 上传单张photo
-     * 
      * @param image
      * @param userId
      * @return

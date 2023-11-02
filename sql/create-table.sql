@@ -85,14 +85,14 @@ create table if not exists `oss_config`
 
 create table if not exists `image`
 (
-    `image_id`   bigint(20)  not null comment 'image_id',
-    `file_name`  varchar(50) not null comment '文件名',
-    `endpoint`   varchar(50) not null comment 'endpoint',
-    `bucket`     varchar(64) not null comment 'bucket',
+    `image_id`   bigint(20)         not null comment 'image_id',
+    `file_name`  varchar(50) unique not null comment '文件名',
+    `endpoint`   varchar(50)        not null comment 'endpoint',
+    `bucket`     varchar(64)        not null comment 'bucket',
     `upload_at`  datetime default now() comment '上传时间',
     `photo_time` datetime default now() comment '照片时间',
     `version`    INT      DEFAULT 1 COMMENT '乐观锁',
     `deleted`    INT      DEFAULT 0 COMMENT '1 删除，0 未删除',
-    `user_id`    bigint(20)  not null comment '所属用户id',
+    `user_id`    bigint(20)         not null comment '所属用户id',
     primary key (`image_id`)
 );

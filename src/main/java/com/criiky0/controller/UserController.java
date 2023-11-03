@@ -6,10 +6,12 @@ import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.UserDTO;
 import com.criiky0.pojo.vo.RegisterVO;
 import com.criiky0.service.UserService;
+import com.criiky0.utils.EnvironmentChecker;
 import com.criiky0.utils.JavaMailUtil;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -37,12 +39,16 @@ public class UserController {
     @Resource
     private HttpServletResponse response;
 
+    private EnvironmentChecker environmentChecker;
+
     private static final String AVATAR_DIR = System.getProperty("user.dir") + "/public/avatars";
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EnvironmentChecker environmentChecker) {
         this.userService = userService;
+        this.environmentChecker = environmentChecker;
     }
+
 
     /**
      * 发送验证码
@@ -74,12 +80,24 @@ public class UserController {
 
     /**
      * 用户登录
-     *
      * @param user user对象
      */
     @PostMapping("login")
     public Result<HashMap<String, String>> login(@RequestBody User user) {
-        return userService.login(user);
+        Result<HashMap<String, String>> result = userService.login(user);
+        if(result.getCode() == 200){
+            HashMap<String, String> data = result.getData();
+            Cookie cookie = new Cookie("token",data.get("token"));
+            cookie.setHttpOnly(true);
+            cookie.setPath("/api");
+            // 生产环境打开HTTPS
+            if(environmentChecker.isProduction()){
+                cookie.setSecure(true);
+            }
+            response.addCookie(cookie);
+            return Result.ok(null);
+        }
+        return result;
     }
 
     /**
@@ -109,9 +127,22 @@ public class UserController {
 
         // 注册
         Result<HashMap<String, String>> r = userService.register(user);
-        Integer code1 = r.getCode();
+        Integer status = r.getCode();
+        // 返回token
+        if(status == 200){
+            HashMap<String, String> tokenMap = r.getData();
+            Cookie cookie = new Cookie("token",tokenMap.get("token"));
+            cookie.setHttpOnly(true);
+            cookie.setPath("/api");
+            // 生产环境打开HTTPS
+            if(environmentChecker.isProduction()){
+                cookie.setSecure(true);
+            }
+            response.addCookie(cookie);
+            return Result.ok(null);
+        }
         // 移除session
-        if (code1 != 400) {
+        if (status != 400) {
             session.removeAttribute("verify-code");
             session.removeAttribute("verify-email");
         }

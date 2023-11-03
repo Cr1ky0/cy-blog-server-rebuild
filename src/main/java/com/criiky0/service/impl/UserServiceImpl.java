@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.UserDTO;
+import com.criiky0.pojo.vo.LoginVo;
+import com.criiky0.pojo.vo.UpdatePswVo;
 import com.criiky0.service.UserService;
 import com.criiky0.mapper.UserMapper;
 import com.criiky0.utils.JwtHelper;
@@ -37,28 +39,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<HashMap<String, String>> login(User user) {
+    public Result login(LoginVo loginVo) {
         // 验证账户
-        User loginUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
+        User loginUser =
+            userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, loginVo.getUserinfo()));
         if (loginUser == null) {
             // 如果username为null验证email
-            loginUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, user.getEmail()));
+            loginUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, loginVo.getUserinfo()));
             if (loginUser == null)
                 return Result.build(null, ResultCodeEnum.USERINFO_ERROR);
         }
-        if (StringUtils.isEmpty(user.getPassword())
-            || !loginUser.getPassword().equals(MD5Util.encrypt(user.getPassword()))) {
+        if (StringUtils.isEmpty(loginVo.getPassword())
+            || !loginUser.getPassword().equals(MD5Util.encrypt(loginVo.getPassword()))) {
             return Result.build(null, ResultCodeEnum.USERINFO_ERROR);
         }
 
-        HashMap<String, String> map = new HashMap<>();
         String token = jwtHelper.createToken(loginUser.getUserId(), loginUser.getRole().toString());
-        map.put("token", token);
-        return Result.ok(map);
+        return Result.ok(token);
     }
 
     @Override
-    public Result<HashMap<String, String>> register(User user) {
+    public Result register(User user) {
         // 验证用户
         User loginUser = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, user.getUsername()));
         if (loginUser != null) {
@@ -82,10 +83,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (insert == 0) {
             return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
         }
-        HashMap<String, String> map = new HashMap<>();
         String token = jwtHelper.createToken(user.getUserId(), user.getRole().toString());
-        map.put("token", token);
-        return Result.ok(map);
+        return Result.ok(token);
     }
 
     @Override
@@ -110,7 +109,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<HashMap<String,UserDTO>> updateUserInfo(User user) {
+    public Result<HashMap<String, UserDTO>> updateUserInfo(User user) {
         boolean hasNickName = !StringUtils.isEmpty(user.getNickname());
         boolean hasBrief = !StringUtils.isEmpty(user.getBrief());
         if (!hasNickName && !hasBrief) {
@@ -124,7 +123,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 new UserDTO(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getNickname(),
                     updatedUser.getBrief(), updatedUser.getEmail(), updatedUser.getAvatar(), updatedUser.getRole());
             HashMap<String, UserDTO> map = new HashMap<>();
-            map.put("updatedUser",updatedUserDTO);
+            map.put("updatedUser", updatedUserDTO);
             return Result.ok(map);
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
@@ -133,8 +132,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public Result<ResultCodeEnum> updateuserRole(User user) {
         User selectUser = userMapper.selectById(user.getUserId());
-        if(selectUser == null){
-            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        if (selectUser == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
         boolean hasRole = !StringUtils.isEmpty(user.getRole().toString());
         if (!hasRole) {
@@ -146,5 +145,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return Result.ok(null);
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> updatePsw(UpdatePswVo pswVo, Long userId) {
+        User user = userMapper.selectById(userId);
+        if (!user.getPassword().equals(MD5Util.encrypt(pswVo.getOldPsw()))) {
+            return Result.build(null, 400, "旧密码错误，请重新再试！");
+        }
+        if (!pswVo.getNewPsw().equals(pswVo.getPswConfirm())) {
+            return Result.build(null, 400, "两次密码输入不一致，请重新再试！");
+        }
+        int update = userMapper.update(null, new LambdaUpdateWrapper<User>().eq(User::getUserId, userId)
+            .set(User::getPassword, MD5Util.encrypt(pswVo.getNewPsw())));
+        if (update > 0) {
+            return Result.ok(null);
+        }
+        return Result.build(null, 400, "密码因未知原因更新失败！");
     }
 }

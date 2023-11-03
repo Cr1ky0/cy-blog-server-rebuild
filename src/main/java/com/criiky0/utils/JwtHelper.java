@@ -67,4 +67,16 @@ public class JwtHelper {
             return true;
         }
     }
+
+    // 返回到期时间
+    public Long getExpiration(String token){
+        try {
+            // 没有过期，有效，返回false，过期返回true
+            Date expiration = Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().getExpiration();
+            return expiration.getTime();
+        } catch (Exception e) {
+            // 出现异常则返回当前时间
+            return System.currentTimeMillis();
+        }
+    }
 }

@@ -36,10 +36,10 @@ public class UserController {
 
     private UserService userService;
 
+    private EnvironmentChecker environmentChecker;
+
     @Resource
     private HttpServletResponse response;
-
-    private EnvironmentChecker environmentChecker;
 
     private static final String AVATAR_DIR = System.getProperty("user.dir") + "/public/avatars";
 
@@ -102,7 +102,6 @@ public class UserController {
 
     /**
      * 注册模块
-     *
      * @param data RegisterVo
      * @param session session
      */

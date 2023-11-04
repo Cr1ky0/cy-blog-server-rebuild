@@ -55,8 +55,8 @@ public class MenuController {
         }
         MenuDTO menu = result.getData();
         Result r = menuService.deleteMenuRecursion(menu, userId);
-        if(r.getCode() != 200){
-            return Result.build(null,r.getCode(),r.getMessage());
+        if (r.getCode() != 200) {
+            return Result.build(null, r.getCode(), r.getMessage());
         }
         return Result.ok(null);
     }
@@ -71,11 +71,11 @@ public class MenuController {
 
     /**
      * 查找单个Menu
-     * 
+     *
      * @param menuId
      * @return
      */
-    @GetMapping("/{id}")
+    @GetMapping("/single/{id}")
     public Result<HashMap<String, MenuDTO>> getMenu(@PathVariable("id") Long menuId) {
         Optional<Menu> opt = menuService.getOptById(menuId);
         if (opt.isEmpty()) {
@@ -84,7 +84,7 @@ public class MenuController {
         HashMap<String, MenuDTO> map = new HashMap<>();
         Menu menu = opt.get();
         MenuDTO menuDTO = new MenuDTO(menu.getMenuId(), menu.getTitle(), menu.getIcon(), menu.getColor(),
-            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(),null, null);
+            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(), null, null);
         List<MenuDTO> subMenu = menuService.findSubMenu(menuDTO);
         menuDTO.setSubMenu(subMenu);
         map.put("menu", menuDTO);
@@ -93,7 +93,7 @@ public class MenuController {
 
     /**
      * 更新菜单
-     * 
+     *
      * @param updateMenuVO 可更新belong、title、icon以及color
      * @param userId
      */
@@ -107,6 +107,16 @@ public class MenuController {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
         return menuService.updateMenu(updateMenuVO, userId);
+    }
+
+    /**
+     * 修改排序
+     * @param idList
+     * @return
+     */
+    @PostMapping("/sort")
+    public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
+        return menuService.sort(idList, userId);
     }
 
 }

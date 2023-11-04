@@ -259,4 +259,28 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         map.put("blogs", blogs);
         return Result.ok(map);
     }
+
+    @Override
+    public Result<ResultCodeEnum> sort(List<Long> idList, Long userId) {
+        int count = 0;
+        for (Long id : idList) {
+            Blog blog = blogMapper.selectById(id);
+            if (blog == null) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+            }
+            if(!blog.getUserId().equals(userId)){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null,ResultCodeEnum.OPERATION_ERROR);
+            }
+            int update = blogMapper.update(null, new LambdaUpdateWrapper<Blog>().eq(Blog::getSort, count));
+            if(update > 0) {
+                count++;
+                continue;
+            }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        }
+        return Result.ok(null);
+    }
 }

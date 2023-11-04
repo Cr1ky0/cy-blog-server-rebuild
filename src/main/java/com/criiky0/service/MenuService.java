@@ -30,4 +30,6 @@ public interface MenuService extends IService<Menu> {
     Result<HashMap<String, List<MenuDTO>>> getMenuOfCriiky0();
 
     Result<HashMap<String, Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId);
+
+    Result<ResultCodeEnum> sort(List<Long> idList,Long userId);
 }

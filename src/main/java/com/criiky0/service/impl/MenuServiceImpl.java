@@ -104,6 +104,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     /**
      * 递归删除该menu下所有结构
+     * 
      * @param menuDTO
      * @return
      */
@@ -131,6 +132,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     /**
      * 递归查询生成menu完整结构
+     * 
      * @param rootMenu
      * @return 返回对应menu的子菜单（子菜单结构是完整的）
      */
@@ -194,6 +196,30 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             return Result.ok(map);
         }
         return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> sort(List<Long> idList,Long userId) {
+        int count = 0;
+        for (Long id : idList) {
+            Menu menu = menuMapper.selectById(id);
+            if (menu == null) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+            }
+            if(!menu.getUserId().equals(userId)){
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null,ResultCodeEnum.OPERATION_ERROR);
+            }
+            int update = menuMapper.update(null, new LambdaUpdateWrapper<Menu>().eq(Menu::getSort, count));
+            if(update > 0) {
+                count++;
+                continue;
+            }
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        }
+        return Result.ok(null);
     }
 
 }

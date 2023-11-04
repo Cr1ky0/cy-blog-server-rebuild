@@ -58,7 +58,6 @@ public class BlogController {
 
     /**
      * 删除博客
-     * 
      * @param blogId
      * @param userId
      * @return
@@ -199,5 +198,15 @@ public class BlogController {
     @GetMapping("/certain_menu")
     public Result<HashMap<String,List<BlogDTO>>> getBlogsOfMenu(@RequestParam("menu_id") Long menuId){
         return blogService.getBlogDTOOfMenu(menuId);
+    }
+
+    /**
+     * 修改排序
+     * @param idList
+     * @return
+     */
+    @PostMapping("/sort")
+    public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
+        return blogService.sort(idList, userId);
     }
 }

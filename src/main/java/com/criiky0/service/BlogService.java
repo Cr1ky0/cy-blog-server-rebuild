@@ -32,4 +32,6 @@ public interface BlogService extends IService<Blog> {
     Result<HashMap<String, List<BlogDTO>>> getTimeLineOfCriiky0();
 
     Result<HashMap<String, List<BlogDTO>>> getBlogDTOOfMenu(Long menuId);
+
+    Result<ResultCodeEnum> sort(List<Long> idList, Long userId);
 }

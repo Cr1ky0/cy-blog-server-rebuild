@@ -52,7 +52,9 @@ public class LogAdvice {
         } catch (Throwable e) {
             // 在目标方法抛异常后：回滚事务（模拟）
             log.info("[AOP 环绕通知] 回滚事务，方法名：" + methodName + "，异常：" + e.getClass().getName());
-
+            log.info("异常信息如下：");
+            log.info(e.getMessage());
+            log.info(Arrays.toString(e.getStackTrace()));
         }
         // finally {
         //

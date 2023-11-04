@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.pojo.Menu;
 import com.criiky0.pojo.dto.MenuDTO;
 import com.criiky0.pojo.vo.UpdateMenuVO;
+import com.criiky0.service.BlogService;
 import com.criiky0.service.MenuService;
 import com.criiky0.mapper.MenuMapper;
 import com.criiky0.utils.Result;
@@ -12,6 +13,7 @@ import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +29,12 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     private MenuMapper menuMapper;
 
+    private BlogService blogService;
+
     @Autowired
-    public MenuServiceImpl(MenuMapper menuMapper) {
+    public MenuServiceImpl(MenuMapper menuMapper, BlogService blogService) {
         this.menuMapper = menuMapper;
+        this.blogService = blogService;
     }
 
     @Override
@@ -52,6 +57,13 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
     }
 
+    /**
+     * 删除菜单及菜单下的blogs
+     * 
+     * @param menuId
+     * @param userId
+     * @return
+     */
     @Override
     public Result<ResultCodeEnum> deleteMenu(Long menuId, Long userId) {
         Menu menu = menuMapper.selectById(menuId);
@@ -61,10 +73,63 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         if (!menu.getUserId().equals(userId)) {
             return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
         }
+        // 先删除所有该Menu下的blog，不然后面会查找不到menu
+        Result<ResultCodeEnum> result = blogService.deleteBlogsOfMenu(menuId, userId);
+        if (result.getCode() != 200) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return result;
+        }
+        // 再删除Menu
         int rows = menuMapper.deleteById(menuId);
-        if (rows > 0)
+        if (rows > 0) {
             return Result.ok(null);
+        }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+    }
+
+    /**
+     * 查找该Menu完整结构
+     * 
+     * @param menuId
+     * @return
+     */
+    @Override
+    public Result<MenuDTO> findMenuIncludesSubMenu(Long menuId) {
+        MenuDTO menuDTO = menuMapper.selectMenuDTO(menuId);
+        if (menuDTO == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
+        List<MenuDTO> subMenu = findSubMenu(menuDTO);
+        menuDTO.setSubMenu(subMenu);
+        return Result.ok(menuDTO);
+    }
+
+    /**
+     * 递归删除该menu下所有结构
+     * 
+     * @param menuDTO
+     * @return
+     */
+    @Override
+    public Result deleteMenuRecursion(MenuDTO menuDTO, Long userId) throws RuntimeException {
+        if (menuDTO != null) {
+            // 删除该菜单及其下的所有Blogs
+            Result<ResultCodeEnum> result = deleteMenu(menuDTO.getMenuId(), userId);
+            if (result.getCode() == 200) {
+                // SubMenu不存在则停止
+                if (menuDTO.getSubMenu() == null || menuDTO.getSubMenu().isEmpty()) {
+                    return Result.ok(null);
+                }
+                // 否则递归删除子菜单
+                for (MenuDTO menu : menuDTO.getSubMenu()) {
+                    deleteMenuRecursion(menu, userId);
+                }
+            } else {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return Result.build(null, result.getCode(), result.getMessage());
+            }
+        }
+        return Result.ok(null);
     }
 
     /**
@@ -101,7 +166,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public Result<HashMap<String,Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
+    public Result<HashMap<String, Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
         Long menuId = updateMenuVO.getMenuId();
         Menu menu = menuMapper.selectById(menuId);
         if (menu == null)
@@ -115,13 +180,13 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             .set(updateMenuVO.getColor() != null, Menu::getColor, updateMenuVO.getColor())
             .set(updateMenuVO.getBelongMenuId() != null, Menu::getBelongMenuId, updateMenuVO.getBelongMenuId());
         int update = menuMapper.update(null, wrapper);
-        if(update > 0){
+        if (update > 0) {
             Menu updatedMenu = menuMapper.selectById(updateMenuVO.getMenuId());
             HashMap<String, Menu> map = new HashMap<>();
-            map.put("updatedMenu",updatedMenu);
+            map.put("updatedMenu", updatedMenu);
             return Result.ok(map);
         }
-        return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
+        return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
     }
 
 }

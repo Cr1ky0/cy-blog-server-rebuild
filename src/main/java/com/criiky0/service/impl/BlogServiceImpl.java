@@ -206,9 +206,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 }
             }
         }
+
         // 数据库删除
         blogMapper.deleteAllOfMenu(menuId);
-
         return Result.ok(null);
     }
 

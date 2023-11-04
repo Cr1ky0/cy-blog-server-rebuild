@@ -2,7 +2,6 @@ package com.criiky0.service.impl;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
-import com.aliyun.oss.OSSException;
 import com.aliyun.oss.common.auth.CredentialsProviderFactory;
 import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.common.comm.ResponseMessage;
@@ -18,6 +17,7 @@ import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +28,7 @@ import java.util.Objects;
  * @createDate 2023-11-01 13:27:34
  */
 @Service
+@Transactional
 public class ImageServiceImpl extends ServiceImpl<ImageMapper, Image> implements ImageService {
 
     private ImageMapper imageMapper;

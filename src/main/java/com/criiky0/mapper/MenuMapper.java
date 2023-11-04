@@ -39,6 +39,8 @@ public interface MenuMapper extends BaseMapper<Menu> {
      * @param menuId
      */
     List<MenuDTO> selectSubMenu(Long menuId);
+
+    MenuDTO selectMenuDTO(Long menuId);
 }
 
 

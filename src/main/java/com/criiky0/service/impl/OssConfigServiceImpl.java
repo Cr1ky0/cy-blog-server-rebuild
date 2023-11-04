@@ -18,6 +18,7 @@ import com.criiky0.utils.ResultCodeEnum;
 import org.codehaus.jettison.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import java.util.Map;
  * @createDate 2023-10-30 17:20:42
  */
 @Service
+@Transactional
 public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig> implements OssConfigService {
 
     private OssConfigMapper ossConfigMapper;

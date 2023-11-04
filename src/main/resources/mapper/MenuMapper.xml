@@ -63,5 +63,10 @@
         where belong_menu_id = #{menuId} and deleted = 0;
     </select>
 
-
+    <select id="selectMenuDTO" resultType="menuDTO">
+        select *
+        from menu
+        where menu_id = ${menuId}
+          and deleted = 0;
+    </select>
 </mapper>

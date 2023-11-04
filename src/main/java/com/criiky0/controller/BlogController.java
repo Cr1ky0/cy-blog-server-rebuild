@@ -29,7 +29,6 @@ public class BlogController {
 
     /**
      * 添加博客（同时添加至ES索引）
-     * 
      * @param blog
      * @param userId
      * @return
@@ -72,7 +71,6 @@ public class BlogController {
 
     /**
      * 更新博客
-     * 
      * @param updateBlogVO
      * @param userId
      * @return
@@ -92,7 +90,6 @@ public class BlogController {
 
     /**
      * 删除指定menu下的所有blogs
-     * 
      * @param menuId
      * @param userId
      * @return

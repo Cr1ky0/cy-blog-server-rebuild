@@ -27,6 +27,7 @@ public class MenuController {
 
     /**
      * 添加菜单
+     * 
      * @param menu body
      * @param userId 拦截器附带
      */
@@ -37,10 +38,26 @@ public class MenuController {
         return menuService.addMenu(menu);
     }
 
+    /**
+     * 删除菜单（递归删除子菜单和Blogs）
+     *
+     * @param menuId
+     * @param userId
+     * @return
+     */
     @DeleteMapping
     public Result<ResultCodeEnum> delMenu(@RequestParam("menu_id") Long menuId,
         @RequestAttribute("userid") Long userId) {
-        return menuService.deleteMenu(menuId, userId);
+        Result<MenuDTO> result = menuService.findMenuIncludesSubMenu(menuId);
+        if (result.getCode() != 200) {
+            return Result.build(null, result.getCode(), result.getMessage());
+        }
+        MenuDTO menu = result.getData();
+        Result r = menuService.deleteMenuRecursion(menu, userId);
+        if(r.getCode() != 200){
+            return Result.build(null,r.getCode(),r.getMessage());
+        }
+        return Result.ok(null);
     }
 
     /**
@@ -53,6 +70,7 @@ public class MenuController {
 
     /**
      * 查找单个Menu
+     * 
      * @param menuId
      * @return
      */
@@ -74,16 +92,18 @@ public class MenuController {
 
     /**
      * 更新菜单
+     * 
      * @param updateMenuVO 可更新belong、title、icon以及color
      * @param userId
      */
     @PatchMapping
-    public Result<HashMap<String,Menu>> updateMenu(@Validated @RequestBody UpdateMenuVO updateMenuVO,
+    public Result<HashMap<String, Menu>> updateMenu(@Validated @RequestBody UpdateMenuVO updateMenuVO,
         @RequestAttribute("userid") Long userId) {
-        List<Object> paramList = Arrays.asList(updateMenuVO.getTitle(),updateMenuVO.getBelongMenuId(),updateMenuVO.getIcon(),updateMenuVO.getColor());
+        List<Object> paramList = Arrays.asList(updateMenuVO.getTitle(), updateMenuVO.getBelongMenuId(),
+            updateMenuVO.getIcon(), updateMenuVO.getColor());
         boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
-        if(isAllNull){
-            return Result.build(null,ResultCodeEnum.PARAM_NULL_ERROR);
+        if (isAllNull) {
+            return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
         return menuService.updateMenu(updateMenuVO, userId);
     }

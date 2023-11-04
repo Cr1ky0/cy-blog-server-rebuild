@@ -19,11 +19,15 @@ public interface MenuService extends IService<Menu> {
 
     Result<HashMap<String, Menu>> addMenu(Menu menu);
 
-    Result<ResultCodeEnum> deleteMenu(Long menuId,Long userId);
+    Result<ResultCodeEnum> deleteMenu(Long menuId, Long userId);
+
+    Result<MenuDTO> findMenuIncludesSubMenu(Long menuId);
+
+    Result deleteMenuRecursion(MenuDTO menuDTO, Long userId);
 
     List<MenuDTO> findSubMenu(MenuDTO rootMenu);
 
     Result<HashMap<String, List<MenuDTO>>> getMenuOfCriiky0();
 
-    Result<HashMap<String,Menu>> updateMenu(UpdateMenuVO updateMenuVO,Long userId);
+    Result<HashMap<String, Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId);
 }

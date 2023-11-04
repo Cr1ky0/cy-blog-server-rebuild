@@ -12,17 +12,42 @@
         <result property="level" column="level" jdbcType="INTEGER"/>
         <result property="sort" column="sort" jdbcType="INTEGER"/>
         <result property="version" column="version" jdbcType="INTEGER"/>
-        <result property="active" column="active" jdbcType="INTEGER"/>
+        <result property="deleted" column="deleted" jdbcType="INTEGER"/>
         <result property="belongMenuId" column="belong_menu_id" jdbcType="BIGINT"/>
         <result property="userId" column="user_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <resultMap id="BlogDTOResultMap" type="blogDTO">
+        <!-- assume you have fields like blogId, title, content in your BlogDTO -->
+        <id property="blogId" column="blog_id"/>
+        <result property="title" column="title"/>
+        <result property="sort" column="sort"/>
+        <result property="createAt" column="create_at"/>
+        <!-- Other fields -->
+    </resultMap>
+
+    <resultMap id="MenuDTOResultMap" type="menuDTO">
+        <id property="menuId" column="menu_id"/>
+        <result property="title" column="title"/>
+        <result property="icon" column="icon"/>
+        <result property="color" column="color"/>
+        <result property="level" column="level"/>
+        <result property="sort" column="sort"/>
+        <result property="belongMenuId" column="belong_menu_id"/>
+        <result property="userId" column="user_id"/>
+        <!-- Collection for blogs -->
+        <collection property="blogs" ofType="blogDTO" column="menu_id" select="selectBlogsByMenu"/>
+        <!-- Self association for subMenu -->
+        <collection property="subMenu" ofType="menuDTO" column="menu_id" select="selectSubMenus"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         menu_id,title,icon,
         color,level,sort,
-        version,active,belong_menu_id,
+        version,deleted,belong_menu_id,
         user_id
     </sql>
+
 
     <select id="findMaxSort" resultType="java.lang.Integer">
         select max(sort) as max_sort from menu
@@ -50,23 +75,59 @@
         </choose>
     </select>
 
-    <select id="selectTopLevelMenuOfCriiky0" resultType="menuDTO">
+    <select id="selectTopLevelMenuOfCriiky0" resultMap="MenuDTOResultMap">
         select *
         from menu
         where user_id =
               (select user_id from user where username = 'criiky0')
-          and level = 1 and deleted = 0;
+          and level = 1
+          and deleted = 0
+        order by sort asc;
     </select>
 
     <select id="selectSubMenu" resultType="menuDTO">
-        select * from menu
-        where belong_menu_id = #{menuId} and deleted = 0;
+        select *
+        from menu
+        where belong_menu_id = #{menuId}
+          and deleted = 0
+        order by sort asc;
     </select>
 
     <select id="selectMenuDTO" resultType="menuDTO">
         select *
         from menu
         where menu_id = ${menuId}
-          and deleted = 0;
+          and deleted = 0
+        order by sort asc;
     </select>
+
+    <select id="selectBlogs" resultType="blogDTO">
+        select *
+        from blog
+        where menu_id = #{menuId}
+          and deleted = 0
+        order by sort asc;
+    </select>
+
+    <!-- Select main menu and start recursion for sub menus -->
+    <select id="selectMenuWithDetails" resultMap="MenuDTOResultMap">
+        SELECT *
+        FROM menu
+        WHERE menu_id = #{menuId}
+    </select>
+
+    <!-- Recursively select sub menus -->
+    <select id="selectSubMenus" resultMap="MenuDTOResultMap">
+        SELECT *
+        FROM menu
+        WHERE belong_menu_id = #{menuId}
+    </select>
+
+    <!-- Select blogs by menu -->
+    <select id="selectBlogsByMenu" resultMap="BlogDTOResultMap">
+        SELECT *
+        FROM blog
+        WHERE menu_id = #{menuId}
+    </select>
+
 </mapper>

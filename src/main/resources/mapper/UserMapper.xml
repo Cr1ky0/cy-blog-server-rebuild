@@ -15,13 +15,13 @@
             <result property="role" column="role" jdbcType="OTHER"/>
             <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
             <result property="version" column="version" jdbcType="INTEGER"/>
-            <result property="active" column="active" jdbcType="INTEGER"/>
+            <result property="deleted" column="deleted" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         user_id,username,nickname,
         password,brief,email,
         avatar,role,create_at,
-        version,active
+        version,deleted
     </sql>
 </mapper>

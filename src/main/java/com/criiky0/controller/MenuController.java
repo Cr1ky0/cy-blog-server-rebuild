@@ -1,6 +1,7 @@
 package com.criiky0.controller;
 
 import com.criiky0.pojo.Menu;
+import com.criiky0.pojo.dto.BlogDTO;
 import com.criiky0.pojo.dto.MenuDTO;
 import com.criiky0.pojo.vo.UpdateMenuVO;
 import com.criiky0.service.MenuService;
@@ -83,7 +84,7 @@ public class MenuController {
         HashMap<String, MenuDTO> map = new HashMap<>();
         Menu menu = opt.get();
         MenuDTO menuDTO = new MenuDTO(menu.getMenuId(), menu.getTitle(), menu.getIcon(), menu.getColor(),
-            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(), null);
+            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(),null, null);
         List<MenuDTO> subMenu = menuService.findSubMenu(menuDTO);
         menuDTO.setSubMenu(subMenu);
         map.put("menu", menuDTO);
@@ -107,4 +108,5 @@ public class MenuController {
         }
         return menuService.updateMenu(updateMenuVO, userId);
     }
+
 }

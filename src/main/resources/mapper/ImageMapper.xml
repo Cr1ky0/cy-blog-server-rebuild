@@ -8,8 +8,8 @@
             <id property="imageId" column="image_id" jdbcType="BIGINT"/>
             <result property="endpoint" column="endpoint" jdbcType="VARCHAR"/>
             <result property="bucket" column="bucket" jdbcType="VARCHAR"/>
-            <result property="uploadat" column="uploadAt" jdbcType="TIMESTAMP"/>
-            <result property="phototime" column="photoTime" jdbcType="TIMESTAMP"/>
+            <result property="uploadAt" column="uploadAt" jdbcType="TIMESTAMP"/>
+            <result property="photoTime" column="photoTime" jdbcType="TIMESTAMP"/>
             <result property="version" column="version" jdbcType="INTEGER"/>
             <result property="deleted" column="deleted" jdbcType="INTEGER"/>
             <result property="userId" column="user_id" jdbcType="BIGINT"/>

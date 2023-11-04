@@ -153,4 +153,10 @@ public class MyTest {
         OssConfig config = ossConfigMapper.selectOne(queryWrapper);
         System.out.println(config);
     }
+
+    @Test
+    public void test16(){
+        MenuDTO menuDTO = menuMapper.selectMenuWithDetails(1720737101854478337L);
+        System.out.println(menuDTO);
+    }
 }

@@ -26,5 +26,7 @@ public class MenuDTO {
 
     private Long userId;
 
+    private List<BlogDTO> blogs;
+
     private List<MenuDTO> subMenu;
 }

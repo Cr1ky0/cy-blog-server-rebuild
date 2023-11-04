@@ -190,4 +190,14 @@ public class BlogController {
     public Result<HashMap<String, List<BlogDTO>>> getTimeLineOfCriiky0() {
         return blogService.getTimeLineOfCriiky0();
     }
+
+    /**
+     * 获取指定menu下的blogs
+     * @param menuId
+     * @return
+     */
+    @GetMapping("/certain_menu")
+    public Result<HashMap<String,List<BlogDTO>>> getBlogsOfMenu(@RequestParam("menu_id") Long menuId){
+        return blogService.getBlogDTOOfMenu(menuId);
+    }
 }

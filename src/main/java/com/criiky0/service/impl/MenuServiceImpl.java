@@ -95,18 +95,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      */
     @Override
     public Result<MenuDTO> findMenuIncludesSubMenu(Long menuId) {
-        MenuDTO menuDTO = menuMapper.selectMenuDTO(menuId);
+        MenuDTO menuDTO = menuMapper.selectMenuWithDetails(menuId);
         if (menuDTO == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
-        List<MenuDTO> subMenu = findSubMenu(menuDTO);
-        menuDTO.setSubMenu(subMenu);
         return Result.ok(menuDTO);
     }
 
     /**
      * 递归删除该menu下所有结构
-     * 
      * @param menuDTO
      * @return
      */
@@ -134,7 +131,6 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     /**
      * 递归查询生成menu完整结构
-     * 
      * @param rootMenu
      * @return 返回对应menu的子菜单（子菜单结构是完整的）
      */
@@ -156,10 +152,10 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     @Override
     public Result<HashMap<String, List<MenuDTO>>> getMenuOfCriiky0() {
         List<MenuDTO> menus = menuMapper.selectTopLevelMenuOfCriiky0();
-        for (MenuDTO menu : menus) {
-            List<MenuDTO> subMenu = findSubMenu(menu);
-            menu.setSubMenu(subMenu);
-        }
+        // for (MenuDTO menu : menus) {
+        // List<MenuDTO> subMenu = findSubMenu(menu);
+        // menu.setSubMenu(subMenu);
+        // }
         HashMap<String, List<MenuDTO>> map = new HashMap<>();
         map.put("menus", menus);
         return Result.ok(map);
@@ -169,16 +165,27 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public Result<HashMap<String, Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
         Long menuId = updateMenuVO.getMenuId();
         Menu menu = menuMapper.selectById(menuId);
+        int level = 0;
+        if (updateMenuVO.getBelongMenuId() != null && updateMenuVO.getBelongMenuId() != 0) {
+            Menu belong = menuMapper.selectById(updateMenuVO.getBelongMenuId());
+            if (belong == null)
+                return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+            level = belong.getLevel() + 1;
+        }
         if (menu == null)
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         if (!menu.getUserId().equals(userId))
             return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
         LambdaUpdateWrapper<Menu> wrapper = new LambdaUpdateWrapper<>();
+        if (menu.getBelongMenuId() == 0) {
+            updateMenuVO.setBelongMenuId(null);
+            level = 1;
+        }
         wrapper.eq(Menu::getMenuId, updateMenuVO.getMenuId())
             .set(updateMenuVO.getTitle() != null, Menu::getTitle, updateMenuVO.getTitle())
             .set(updateMenuVO.getIcon() != null, Menu::getIcon, updateMenuVO.getIcon())
             .set(updateMenuVO.getColor() != null, Menu::getColor, updateMenuVO.getColor())
-            .set(updateMenuVO.getBelongMenuId() != null, Menu::getBelongMenuId, updateMenuVO.getBelongMenuId());
+            .set(Menu::getBelongMenuId, updateMenuVO.getBelongMenuId()).set(Menu::getLevel, level);
         int update = menuMapper.update(null, wrapper);
         if (update > 0) {
             Menu updatedMenu = menuMapper.selectById(updateMenuVO.getMenuId());

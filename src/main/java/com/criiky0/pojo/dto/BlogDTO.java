@@ -10,5 +10,7 @@ public class BlogDTO {
 
     private String title;
 
+    private Integer sort;
+
     private Date createAt;
 }

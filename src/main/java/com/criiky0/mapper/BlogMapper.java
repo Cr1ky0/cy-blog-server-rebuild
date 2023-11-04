@@ -31,6 +31,8 @@ public interface BlogMapper extends BaseMapper<Blog> {
     List<BlogDTO> selectCollectedBlogDTO(Long userId);
 
     List<BlogDTO> selectTimeLine(Long userId);
+
+    List<BlogDTO> getBlogDTOOfMenu(Long menuId);
 }
 
 

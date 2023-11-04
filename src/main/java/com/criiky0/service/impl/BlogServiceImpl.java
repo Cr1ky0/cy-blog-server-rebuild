@@ -218,12 +218,11 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
         // wrapper
         LambdaQueryWrapper<Blog> wrapper = new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, user.getUserId());
-        if(collected){
-            wrapper.eq(Blog::getCollected,true);
+        if (collected) {
+            wrapper.eq(Blog::getCollected, true);
         }
         Page<Blog> myPage = new Page<>(page, size);
-        Page<Blog> blogPage =
-            blogMapper.selectPage(myPage, wrapper);
+        Page<Blog> blogPage = blogMapper.selectPage(myPage, wrapper);
         HashMap<String, Object> map = new HashMap<>();
         map.put("records", blogPage.getRecords());
         map.put("currentPage", blogPage.getCurrent());
@@ -250,6 +249,14 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         List<BlogDTO> dtos = blogMapper.selectTimeLine(user.getUserId());
         HashMap<String, List<BlogDTO>> map = new HashMap<>();
         map.put("timeline", dtos);
+        return Result.ok(map);
+    }
+
+    @Override
+    public Result<HashMap<String, List<BlogDTO>>> getBlogDTOOfMenu(Long menuId) {
+        List<BlogDTO> blogs = blogMapper.getBlogDTOOfMenu(menuId);
+        HashMap<String, List<BlogDTO>> map = new HashMap<>();
+        map.put("blogs", blogs);
         return Result.ok(map);
     }
 }

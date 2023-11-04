@@ -12,7 +12,7 @@
             <result property="brief" column="brief" jdbcType="VARCHAR"/>
             <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
             <result property="version" column="version" jdbcType="INTEGER"/>
-            <result property="active" column="active" jdbcType="INTEGER"/>
+            <result property="deleted" column="deleted" jdbcType="INTEGER"/>
             <result property="belongCommentId" column="belong_comment_id" jdbcType="BIGINT"/>
             <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="blogId" column="blog_id" jdbcType="BIGINT"/>
@@ -21,7 +21,7 @@
     <sql id="Base_Column_List">
         comment_id,content,likes,
         username,brief,create_at,
-        version,active,belong_comment_id,
+        version,deleted,belong_comment_id,
         user_id,blog_id
     </sql>
 

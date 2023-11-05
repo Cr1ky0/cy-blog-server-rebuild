@@ -221,7 +221,7 @@ public class BlogController {
      */
     @GetMapping("/criiky0/count")
     public Result<HashMap<String,Long>> getCountOfCriiky0(){
-        User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getNickname, "criiky0"));
+        User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
         long count = blogService.count(new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, criiky0.getUserId()));
         HashMap<String, Long> map = new HashMap<>();
         map.put("count",count);

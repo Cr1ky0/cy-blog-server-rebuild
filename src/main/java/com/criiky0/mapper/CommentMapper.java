@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface CommentMapper extends BaseMapper<Comment> {
 
-    IPage<Map> selectCommentDTOsOfBlog(IPage<CommentDTO> page, Long blogId);
+    IPage<Map> selectCommentDTOsOfBlog(IPage<CommentDTO> page, Long blogId, String sort);
 
     List<CommentDTO> selectSubComment(Long commentId);
 }

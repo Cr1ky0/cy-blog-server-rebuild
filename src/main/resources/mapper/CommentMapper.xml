@@ -43,8 +43,14 @@
         select *
         from comment
         where blog_id = #{blogId}
-          and belong_comment_id is null
-          and deleted = 0
+        and belong_comment_id is null
+        and deleted = 0
+        <if test="sort != null and sort == 'create_at'">
+            order by create_at desc
+        </if>
+        <if test="sort != null and sort == 'likes'">
+            order by likes desc
+        </if>
     </select>
 
     <select id="selectSubComment" resultMap="CommentDTOResultMap">

@@ -119,6 +119,7 @@ public class UserController {
 
     /**
      * 获取登录验证码
+     * 
      * @param session
      * @return
      * @throws IOException
@@ -151,7 +152,7 @@ public class UserController {
      */
     @PostMapping("login")
     public Result<HashMap<String, Long>> login(@RequestBody LoginVo loginVo, HttpSession session) {
-        if(environmentChecker.isProduction()) {
+        if (environmentChecker.isProduction()) {
             Object code = session.getAttribute("login_code");
             if (code == null || !code.toString().equalsIgnoreCase(loginVo.getVerificationCode())) {
                 return Result.build(null, ResultCodeEnum.CODE_ERROR);
@@ -363,19 +364,33 @@ public class UserController {
      * @return
      */
     @GetMapping("/{id}")
-    public Result<HashMap<String,User>> getUserInfoById(@PathVariable("id") Long userId){
+    public Result<HashMap<String, User>> getUserInfoById(@PathVariable("id") Long userId) {
         User user = userService.getById(userId);
-        if(user == null){
-            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        if (user == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
         HashMap<String, User> map = new HashMap<>();
-        map.put("user",user);
+        map.put("user", user);
         return Result.ok(map);
     }
 
     @PatchMapping("/email")
-    public Result<ResultCodeEnum> updateEmail(@RequestBody UpdateEmailVo updateEmailVo){
+    public Result<ResultCodeEnum> updateEmail(@RequestBody UpdateEmailVo updateEmailVo) {
         // TODO:更新邮箱
         return null;
+    }
+
+    /**
+     * 获取指定用户头像
+     * @param userId
+     * @return
+     */
+    @GetMapping("/avatar/{id}")
+    public void getAvatarById(@PathVariable("id") Long userId) {
+        User user = userService.getById(userId);
+        if (user == null) {
+            LoginProtectUtil.writeToResponse(response, Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR));
+        }
+        getCertainUserAvatar(user.getUserId());
     }
 }

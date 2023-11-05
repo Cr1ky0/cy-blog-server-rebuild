@@ -62,21 +62,33 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public Result<HashMap<String,Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size) {
+    public Result<HashMap<String, Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size, String sort) {
         IPage<CommentDTO> myPage = new Page<>(page, size);
-        commentMapper.selectCommentDTOsOfBlog(myPage, blogId);
+        commentMapper.selectCommentDTOsOfBlog(myPage, blogId, sort);
         HashMap<String, Object> pageMap = new HashMap<>();
-        pageMap.put("comments",myPage.getRecords());
-        pageMap.put("pageNum",myPage.getCurrent());
-        pageMap.put("pageSize",myPage.getSize());
-        pageMap.put("totalPage",myPage.getPages());
-        pageMap.put("totalSize",myPage.getTotal());
+        pageMap.put("comments", myPage.getRecords());
+        pageMap.put("pageNum", myPage.getCurrent());
+        pageMap.put("pageSize", myPage.getSize());
+        pageMap.put("totalPage", myPage.getPages());
+        pageMap.put("totalSize", myPage.getTotal());
         return Result.ok(pageMap);
     }
 
     @Override
     public Result<ResultCodeEnum> deleteAllOfBlog(Long blogId) {
         commentMapper.delete(new LambdaQueryWrapper<Comment>().eq(Comment::getBlogId, blogId));
+        return Result.ok(null);
+    }
+
+    @Override
+    public Result<ResultCodeEnum> deleteComment(Long commentId) {
+        Comment comment = commentMapper.selectById(commentId);
+        if (comment == null)
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        // 删除子评论（这里评论仅两层）
+        commentMapper.delete(new LambdaQueryWrapper<Comment>().eq(Comment::getBelongCommentId, commentId));
+        // 删除主评论
+        commentMapper.deleteById(commentId);
         return Result.ok(null);
     }
 }

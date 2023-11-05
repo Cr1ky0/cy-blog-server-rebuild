@@ -32,8 +32,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 "/api/oss/**", "/api/image/**")
             .excludePathPatterns(
                     "/api/menu/criiky0", "/api/menu/single/**",
-                    "/api/blog/criiky0/**", "/api/blog/single/**", "/api/blog/browse","/api/blog/certain_menu",
-                    "/api/comment/post", "/api/comment/browse", "/api/comment/curblog", "/api/comment/single/**",
+                    "/api/blog/criiky0/**", "/api/blog/single/**", "/api/blog/browse",
+                    "/api/blog/certain_menu",
+                    "/api/comment/post", "/api/comment/browse", "/api/comment/curblog/**",
+                    "/api/comment/single/**","/api/comment/emoji",
                     "/api/oss/callback");
     }
 

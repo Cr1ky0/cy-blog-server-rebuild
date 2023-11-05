@@ -69,6 +69,10 @@ public class GlobalExceptionHandler {
         HashMap<String, String> errorMap = new HashMap<>();
         errorMap.put("error", e.getMessage());
         log.info("发生异常：" + e.getClass().getName());
+        StackTraceElement[] traces = e.getStackTrace();
+        for(StackTraceElement trace : traces){
+            log.info(trace.toString());
+        }
         return Result.build(errorMap, ResultCodeEnum.OCCUR_EXCEPTION);
     }
 

@@ -20,7 +20,9 @@ public interface CommentService extends IService<Comment> {
 
     List<CommentDTO> findSubComment(CommentDTO rootComment);
 
-    Result<HashMap<String,Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size);
+    Result<HashMap<String,Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size,String sort);
 
     Result<ResultCodeEnum> deleteAllOfBlog(Long blogId);
+
+    Result<ResultCodeEnum> deleteComment(Long commentId);
 }

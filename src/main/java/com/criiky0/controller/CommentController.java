@@ -9,12 +9,18 @@ import com.criiky0.service.BlogService;
 import com.criiky0.service.CommentService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/comment")
@@ -22,6 +28,8 @@ public class CommentController {
     private CommentService commentService;
 
     private BlogService blogService;
+
+    private final String SYS_PATH = System.getProperty("user.dir");
 
     @Autowired
     public CommentController(CommentService commentService, BlogService blogService) {
@@ -31,7 +39,7 @@ public class CommentController {
 
     /**
      * 添加评论
-     * 
+     *
      * @param comment
      * @return
      */
@@ -42,21 +50,18 @@ public class CommentController {
 
     /**
      * 删除评论
-     * 
+     *
      * @param commentId
      * @return
      */
     @DeleteMapping
     public Result<ResultCodeEnum> deleteComment(@RequestParam("comment_id") Long commentId) {
-        boolean removed = commentService.removeById(commentId);
-        if (removed)
-            return Result.ok(null);
-        return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
+        return commentService.deleteComment(commentId);
     }
 
     /**
      * 更新评论浏览数据
-     * 
+     *
      * @param commentId
      * @param plus
      * @return
@@ -87,7 +92,7 @@ public class CommentController {
     }
 
     /**
-     * 获取当前blog评论分页 可以无限嵌套（与menu实现类似）
+     * 获取当前blog评论分页
      * 
      * @param blogId
      * @return
@@ -95,12 +100,13 @@ public class CommentController {
     @GetMapping("/curblog")
     public Result<HashMap<String, Object>> getAllCommentOfBlog(@RequestParam("blog_id") Long blogId,
         @RequestParam(value = "page", defaultValue = "1") Integer page,
-        @RequestParam(value = "size", defaultValue = "5") Integer size) {
+        @RequestParam(value = "size", defaultValue = "5") Integer size,
+        @RequestParam(value = "sort", defaultValue = "creat_at") String sort) {
         boolean exists = blogService.exists(new LambdaQueryWrapper<Blog>().eq(Blog::getBlogId, blogId));
         if (!exists) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
-        return commentService.getCommentPageOfBlog(blogId, page, size);
+        return commentService.getCommentPageOfBlog(blogId, page, size, sort);
     }
 
     /**
@@ -120,7 +126,7 @@ public class CommentController {
 
     /**
      * 获取单个Comment
-     * 
+     *
      * @param commentId
      * @return
      */
@@ -132,5 +138,39 @@ public class CommentController {
         HashMap<String, Comment> map = new HashMap<>();
         map.put("comment", comment);
         return Result.ok(map);
+    }
+
+    /**
+     * 获取博客评论计数
+     *
+     * @param blogId
+     * @return
+     */
+    @GetMapping("/curblog/count")
+    public Result<HashMap<String, Long>> getCountOfBlog(@RequestParam("blog_id") Long blogId) {
+        Blog blog = blogService.getById(blogId);
+        if (blog == null) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
+        long count = commentService.count(new LambdaQueryWrapper<Comment>().eq(Comment::getBlogId, blogId));
+        HashMap<String, Long> map = new HashMap<>();
+        map.put("count", count);
+        return Result.ok(map);
+    }
+
+    /**
+     * 获取emoji
+     * 
+     * @return
+     */
+    @GetMapping("/emoji")
+    public Result<HashMap<String, Map>> getEmojis() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        File file = new File(SYS_PATH + "/public/emoji", "emoji.json");
+        // 从JSON文件转换为Map
+        Map<String, Object> jsonMap = objectMapper.readValue(file, new TypeReference<>() {});
+        HashMap<String, Map> resultMap = new HashMap<>();
+        resultMap.put("emojis", jsonMap);
+        return Result.ok(resultMap);
     }
 }

@@ -31,6 +31,7 @@ public class CommentController {
 
     /**
      * 添加评论
+     * 
      * @param comment
      * @return
      */
@@ -55,12 +56,13 @@ public class CommentController {
 
     /**
      * 更新评论浏览数据
+     * 
      * @param commentId
      * @param plus
      * @return
      */
     @PatchMapping("/browse")
-    public Result<HashMap<String,Comment>> updateCommentLikes(@RequestParam("comment_id") Long commentId,
+    public Result<HashMap<String, Comment>> updateCommentLikes(@RequestParam("comment_id") Long commentId,
         @RequestParam(value = "plus", defaultValue = "true") boolean plus) {
         Comment comment = commentService.getById(commentId);
         if (comment == null) {
@@ -68,64 +70,67 @@ public class CommentController {
         }
         int num = comment.getLikes() + 1;
         if (!plus) {
-            if(comment.getLikes() == 0)
+            if (comment.getLikes() == 0)
                 num = 0;
             else
                 num = comment.getLikes() - 1;
         }
         boolean updated = commentService.update(
             new LambdaUpdateWrapper<Comment>().eq(Comment::getCommentId, commentId).set(Comment::getLikes, num));
-        if(updated){
+        if (updated) {
             comment.setLikes(num);
             HashMap<String, Comment> map = new HashMap<>();
-            map.put("updatedComment",comment);
+            map.put("updatedComment", comment);
             return Result.ok(map);
         }
-        return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
     }
 
-
     /**
-     * 获取指定blog的所有comment
-     * 可以无限嵌套（与menu实现类似）
+     * 获取当前blog评论分页 可以无限嵌套（与menu实现类似）
+     * 
      * @param blogId
      * @return
      */
     @GetMapping("/curblog")
-    public Result<HashMap<String, List<CommentDTO>>> getAllCommentOfBlog(@RequestParam("blog_id") Long blogId){
+    public Result<HashMap<String, Object>> getAllCommentOfBlog(@RequestParam("blog_id") Long blogId,
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "size", defaultValue = "5") Integer size) {
         boolean exists = blogService.exists(new LambdaQueryWrapper<Blog>().eq(Blog::getBlogId, blogId));
-        if(!exists){
-            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        if (!exists) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
-        return commentService.getAllCommentOfBlog(blogId);
+        return commentService.getCommentPageOfBlog(blogId, page, size);
     }
 
     /**
      * 删除该博客下所有comment
+     * 
      * @param blogId
      * @return
      */
     @DeleteMapping("/blog")
-    public Result<ResultCodeEnum> deleteCommentsOfBlog(@RequestParam("blog_id") Long blogId){
+    public Result<ResultCodeEnum> deleteCommentsOfBlog(@RequestParam("blog_id") Long blogId) {
         boolean exists = blogService.exists(new LambdaQueryWrapper<Blog>().eq(Blog::getBlogId, blogId));
-        if(!exists){
-            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        if (!exists) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
         return commentService.deleteAllOfBlog(blogId);
     }
 
     /**
      * 获取单个Comment
+     * 
      * @param commentId
      * @return
      */
     @GetMapping("/single/{id}")
-    public Result<HashMap<String,Comment>> getSingle(@PathVariable("id") Long commentId){
+    public Result<HashMap<String, Comment>> getSingle(@PathVariable("id") Long commentId) {
         Comment comment = commentService.getById(commentId);
-        if(comment == null)
-            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        if (comment == null)
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         HashMap<String, Comment> map = new HashMap<>();
-        map.put("comment",comment);
+        map.put("comment", comment);
         return Result.ok(map);
     }
 }

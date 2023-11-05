@@ -1,6 +1,8 @@
 package com.criiky0.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.pojo.Comment;
 import com.criiky0.pojo.dto.CommentDTO;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author criiky0
@@ -59,15 +62,16 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public Result<HashMap<String, List<CommentDTO>>> getAllCommentOfBlog(Long blogId) {
-        List<CommentDTO> comments = commentMapper.selectTopCommentDTOs(blogId);
-        for(CommentDTO comment : comments){
-            List<CommentDTO> subComment = findSubComment(comment);
-            comment.setSubComments(subComment);
-        }
-        HashMap<String, List<CommentDTO>> map = new HashMap<>();
-        map.put("comments",comments);
-        return Result.ok(map);
+    public Result<HashMap<String,Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size) {
+        IPage<CommentDTO> myPage = new Page<>(page, size);
+        commentMapper.selectCommentDTOsOfBlog(myPage, blogId);
+        HashMap<String, Object> pageMap = new HashMap<>();
+        pageMap.put("comments",myPage.getRecords());
+        pageMap.put("pageNum",myPage.getCurrent());
+        pageMap.put("pageSize",myPage.getSize());
+        pageMap.put("totalPage",myPage.getPages());
+        pageMap.put("totalSize",myPage.getTotal());
+        return Result.ok(pageMap);
     }
 
     @Override

@@ -22,7 +22,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
         this.roleProtectInterceptor = roleProtectInterceptor;
     }
 
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginProtectInterceptor)
@@ -37,6 +36,5 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/comment/post", "/api/comment/browse", "/api/comment/curblog", "/api/comment/single/**",
                     "/api/oss/callback");
     }
-
 
 }

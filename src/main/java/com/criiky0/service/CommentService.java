@@ -10,17 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
-* @author criiky0
-* @description 针对表【comment】的数据库操作Service
-* @createDate 2023-10-26 14:24:13
-*/
+ * @author criiky0
+ * @description 针对表【comment】的数据库操作Service
+ * @createDate 2023-10-26 14:24:13
+ */
 public interface CommentService extends IService<Comment> {
 
-    Result<HashMap<String,Comment>> addComment(Comment comment);
+    Result<HashMap<String, Comment>> addComment(Comment comment);
 
     List<CommentDTO> findSubComment(CommentDTO rootComment);
 
-    Result<HashMap<String, List<CommentDTO>>> getAllCommentOfBlog(Long blogId);
+    Result<HashMap<String,Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size);
 
     Result<ResultCodeEnum> deleteAllOfBlog(Long blogId);
 }

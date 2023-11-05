@@ -1,10 +1,13 @@
 package com.criiky0.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.criiky0.pojo.Blog;
+import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.BlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
+import com.criiky0.service.UserService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +25,12 @@ public class BlogController {
 
     private BlogService blogService;
 
+    private UserService userService;
+
     @Autowired
-    public BlogController(BlogService blogService) {
+    public BlogController(BlogService blogService, UserService userService) {
         this.blogService = blogService;
+        this.userService = userService;
     }
 
     /**
@@ -182,7 +188,6 @@ public class BlogController {
 
     /**
      * 查询criiky0的TimeLine
-     * 
      * @return
      */
     @GetMapping("/criiky0/timeline")
@@ -205,8 +210,21 @@ public class BlogController {
      * @param idList
      * @return
      */
-    @PostMapping("/sort")
+    @PatchMapping("/sort")
     public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
         return blogService.sort(idList, userId);
+    }
+
+    /**
+     * 获取criiky0的blog数量
+     * @return
+     */
+    @GetMapping("/criiky0/count")
+    public Result<HashMap<String,Long>> getCountOfCriiky0(){
+        User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getNickname, "criiky0"));
+        long count = blogService.count(new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, criiky0.getUserId()));
+        HashMap<String, Long> map = new HashMap<>();
+        map.put("count",count);
+        return Result.ok(map);
     }
 }

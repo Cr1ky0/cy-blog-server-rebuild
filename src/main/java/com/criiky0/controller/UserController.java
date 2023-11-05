@@ -151,9 +151,11 @@ public class UserController {
      */
     @PostMapping("login")
     public Result<HashMap<String, Long>> login(@RequestBody LoginVo loginVo, HttpSession session) {
-        Object code = session.getAttribute("login_code");
-        if (code == null || !code.toString().equalsIgnoreCase(loginVo.getVerificationCode())) {
-            return Result.build(null, ResultCodeEnum.CODE_ERROR);
+        if(environmentChecker.isProduction()) {
+            Object code = session.getAttribute("login_code");
+            if (code == null || !code.toString().equalsIgnoreCase(loginVo.getVerificationCode())) {
+                return Result.build(null, ResultCodeEnum.CODE_ERROR);
+            }
         }
         Result result = userService.login(loginVo);
         if (result.getCode() == 200) {
@@ -353,6 +355,22 @@ public class UserController {
     @PatchMapping("/password")
     public Result<ResultCodeEnum> updatePsw(@RequestBody UpdatePswVo pswVo, @RequestAttribute("userid") Long userId) {
         return userService.updatePsw(pswVo, userId);
+    }
+
+    /**
+     * 根据Id获取UserInfo
+     * @param userId
+     * @return
+     */
+    @GetMapping("/{id}")
+    public Result<HashMap<String,User>> getUserInfoById(@PathVariable("id") Long userId){
+        User user = userService.getById(userId);
+        if(user == null){
+            return Result.build(null,ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
+        HashMap<String, User> map = new HashMap<>();
+        map.put("user",user);
+        return Result.ok(map);
     }
 
     @PatchMapping("/email")

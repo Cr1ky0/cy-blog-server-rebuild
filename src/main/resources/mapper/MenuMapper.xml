@@ -113,21 +113,21 @@
     <select id="selectMenuWithDetails" resultMap="MenuDTOResultMap">
         SELECT *
         FROM menu
-        WHERE menu_id = #{menuId}
+        WHERE menu_id = #{menuId} and deleted = 0;
     </select>
 
     <!-- Recursively select sub menus -->
     <select id="selectSubMenus" resultMap="MenuDTOResultMap">
         SELECT *
         FROM menu
-        WHERE belong_menu_id = #{menuId}
+        WHERE belong_menu_id = #{menuId} and deleted = 0;
     </select>
 
     <!-- Select blogs by menu -->
     <select id="selectBlogsByMenu" resultMap="BlogDTOResultMap">
         SELECT *
         FROM blog
-        WHERE menu_id = #{menuId}
+        WHERE menu_id = #{menuId} and deleted = 0;
     </select>
 
 </mapper>

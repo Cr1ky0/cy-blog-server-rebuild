@@ -114,7 +114,7 @@ public class MenuController {
      * @param idList
      * @return
      */
-    @PostMapping("/sort")
+    @PatchMapping("/sort")
     public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
         return menuService.sort(idList, userId);
     }

@@ -54,7 +54,11 @@ public class LogAdvice {
             log.info("[AOP 环绕通知] 回滚事务，方法名：" + methodName + "，异常：" + e.getClass().getName());
             log.info("异常信息如下：");
             log.info(e.getMessage());
-            log.info(Arrays.toString(e.getStackTrace()));
+            StackTraceElement[] traces = e.getStackTrace();
+            for(StackTraceElement trace : traces){
+                log.info(trace.toString());
+            }
+
         }
         // finally {
         //

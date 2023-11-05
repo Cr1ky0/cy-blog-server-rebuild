@@ -18,6 +18,20 @@
             <result property="blogId" column="blog_id" jdbcType="BIGINT"/>
     </resultMap>
 
+    <resultMap id="CommentDTOResultMap" type="commentDTO">
+        <id property="commentId" column="comment_id" jdbcType="BIGINT"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="likes" column="likes" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="brief" column="brief" jdbcType="VARCHAR"/>
+        <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
+        <result property="belongCommentId" column="belong_comment_id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="blogId" column="blog_id" jdbcType="BIGINT"/>
+        <!-- Self association for subComments -->
+        <collection property="subComments" ofType="commentDTO" column="comment_id" select="selectSubComment"/>
+    </resultMap>
+
     <sql id="Base_Column_List">
         comment_id,content,likes,
         username,brief,create_at,
@@ -25,15 +39,15 @@
         user_id,blog_id
     </sql>
 
-    <select id="selectTopCommentDTOs" resultType="commentDTO">
+    <select id="selectCommentDTOsOfBlog" resultMap="CommentDTOResultMap">
         select *
         from comment
         where blog_id = #{blogId}
           and belong_comment_id is null
-          and deleted = 0;
+          and deleted = 0
     </select>
 
-    <select id="selectSubComment" resultType="commentDTO">
+    <select id="selectSubComment" resultMap="CommentDTOResultMap">
         select *
         from comment
         where belong_comment_id = #{commentId}

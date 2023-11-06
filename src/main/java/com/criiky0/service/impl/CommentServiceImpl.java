@@ -8,6 +8,7 @@ import com.criiky0.pojo.Comment;
 import com.criiky0.pojo.dto.CommentDTO;
 import com.criiky0.service.CommentService;
 import com.criiky0.mapper.CommentMapper;
+import com.criiky0.utils.QueryHelper;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,11 +63,13 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     }
 
     @Override
-    public Result<HashMap<String, Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size, String sort) {
+    public Result<HashMap<String, Object>> getCommentPageOfBlog(Long blogId, Integer page, Integer size, String sort,
+        String options) {
         IPage<CommentDTO> myPage = new Page<>(page, size);
-        commentMapper.selectCommentDTOsOfBlog(myPage, blogId, sort);
+        Map<String, String> queryMap = QueryHelper.filterOptions(options);
+        commentMapper.selectCommentDTOsOfBlog(myPage, blogId, sort, queryMap);
         HashMap<String, Object> pageMap = new HashMap<>();
-        pageMap.put("comments", myPage.getRecords());
+        pageMap.put("records", myPage.getRecords());
         pageMap.put("pageNum", myPage.getCurrent());
         pageMap.put("pageSize", myPage.getSize());
         pageMap.put("totalPage", myPage.getPages());

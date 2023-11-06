@@ -101,12 +101,13 @@ public class CommentController {
     public Result<HashMap<String, Object>> getAllCommentOfBlog(@RequestParam("blog_id") Long blogId,
         @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "5") Integer size,
-        @RequestParam(value = "sort", defaultValue = "creat_at") String sort) {
+        @RequestParam(value = "sort", defaultValue = "creat_at") String sort,
+        @RequestParam(value = "options", defaultValue = "") String options) {
         boolean exists = blogService.exists(new LambdaQueryWrapper<Blog>().eq(Blog::getBlogId, blogId));
         if (!exists) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
-        return commentService.getCommentPageOfBlog(blogId, page, size, sort);
+        return commentService.getCommentPageOfBlog(blogId, page, size, sort, options);
     }
 
     /**
@@ -126,7 +127,7 @@ public class CommentController {
 
     /**
      * 获取单个Comment
-     *
+     * 
      * @param commentId
      * @return
      */

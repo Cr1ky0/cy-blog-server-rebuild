@@ -19,6 +19,7 @@ import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.mapper.BlogMapper;
 import com.criiky0.utils.ElasticSearchUtil;
+import com.criiky0.utils.QueryHelper;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author criiky0
@@ -213,16 +215,12 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
-    public Result<HashMap<String, Object>> getBlogPageOfCriiky0(Integer page, Integer size, Boolean collected) {
+    public Result<HashMap<String, Object>> getBlogPageOfUser(Integer page, Integer size, String sort, String options,
+        Long userId) {
         // 获取我个人信息
-        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
-        // wrapper
-        LambdaQueryWrapper<Blog> wrapper = new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, user.getUserId());
-        if (collected) {
-            wrapper.eq(Blog::getCollected, true);
-        }
-        Page<Blog> myPage = new Page<>(page, size);
-        Page<Blog> blogPage = blogMapper.selectPage(myPage, wrapper);
+        Page<Blog> blogPage = new Page<>(page, size);
+        Map<String, String> queryMap = QueryHelper.filterOptions(options);
+        blogMapper.selectPageOfUser(blogPage, userId, sort, queryMap);
         HashMap<String, Object> map = new HashMap<>();
         map.put("records", blogPage.getRecords());
         map.put("currentPage", blogPage.getCurrent());
@@ -269,17 +267,17 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
             }
-            if(!blog.getUserId().equals(userId)){
+            if (!blog.getUserId().equals(userId)) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return Result.build(null,ResultCodeEnum.OPERATION_ERROR);
+                return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
             }
             int update = blogMapper.update(null, new LambdaUpdateWrapper<Blog>().eq(Blog::getSort, count));
-            if(update > 0) {
+            if (update > 0) {
                 count++;
                 continue;
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+            return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
         }
         return Result.ok(null);
     }

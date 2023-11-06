@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,9 +15,11 @@ import java.util.List;
  */
 public interface ImageService extends IService<Image> {
 
-    Result<ResultCodeEnum> deletePhoto(Long imageId,Long userId);
+    Result<ResultCodeEnum> deletePhoto(Long imageId, Long userId);
 
     Result<ResultCodeEnum> uploadMany(List<Image> images, Long userId);
 
-    Result<ResultCodeEnum> deletePhotos(List<Long> list,Long userId);
+    Result<ResultCodeEnum> deletePhotos(List<Long> list, Long userId);
+
+    Result<HashMap<String, Object>> selectPage(Integer page, Integer size, Long userId);
 }

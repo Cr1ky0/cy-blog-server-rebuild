@@ -5,17 +5,17 @@
 <mapper namespace="com.criiky0.mapper.CommentMapper">
 
     <resultMap id="BaseResultMap" type="com.criiky0.pojo.Comment">
-            <id property="commentId" column="comment_id" jdbcType="BIGINT"/>
-            <result property="content" column="content" jdbcType="VARCHAR"/>
-            <result property="likes" column="likes" jdbcType="INTEGER"/>
-            <result property="username" column="username" jdbcType="VARCHAR"/>
-            <result property="brief" column="brief" jdbcType="VARCHAR"/>
-            <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
-            <result property="version" column="version" jdbcType="INTEGER"/>
-            <result property="deleted" column="deleted" jdbcType="INTEGER"/>
-            <result property="belongCommentId" column="belong_comment_id" jdbcType="BIGINT"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
-            <result property="blogId" column="blog_id" jdbcType="BIGINT"/>
+        <id property="commentId" column="comment_id" jdbcType="BIGINT"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="likes" column="likes" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="brief" column="brief" jdbcType="VARCHAR"/>
+        <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="deleted" column="deleted" jdbcType="INTEGER"/>
+        <result property="belongCommentId" column="belong_comment_id" jdbcType="BIGINT"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="blogId" column="blog_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <resultMap id="CommentDTOResultMap" type="commentDTO">
@@ -45,6 +45,7 @@
         where blog_id = #{blogId}
         and belong_comment_id is null
         and deleted = 0
+        <include refid="com.criiky0.mapper.BlogMapper.query_map"/>
         <if test="sort != null and sort == 'create_at'">
             order by create_at desc
         </if>

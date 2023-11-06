@@ -35,6 +35,7 @@ public class BlogController {
 
     /**
      * 添加博客（同时添加至ES索引）
+     * 
      * @param blog
      * @param userId
      * @return
@@ -64,6 +65,7 @@ public class BlogController {
 
     /**
      * 删除博客
+     * 
      * @param blogId
      * @param userId
      * @return
@@ -76,6 +78,7 @@ public class BlogController {
 
     /**
      * 更新博客
+     * 
      * @param updateBlogVO
      * @param userId
      * @return
@@ -95,6 +98,7 @@ public class BlogController {
 
     /**
      * 删除指定menu下的所有blogs
+     * 
      * @param menuId
      * @param userId
      * @return
@@ -110,16 +114,19 @@ public class BlogController {
      * 
      * @param page
      * @param size
+     * @param options 自定义options，用,隔开每个查询条件（&options=collected:true,sort:likes）
      * @return
      */
     @GetMapping("/criiky0")
     public Result<HashMap<String, Object>> getBlogPage(@RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "10") Integer size,
-        @RequestParam(value = "collected", defaultValue = "false") Boolean collected) {
+        @RequestParam(value = "sort", defaultValue = "create_at") String sort,
+        @RequestParam(value = "options", defaultValue = "") String options) {
         if (page <= 0 || size <= 0) {
             return Result.build(null, ResultCodeEnum.PARAM_ERROR);
         }
-        return blogService.getBlogPageOfCriiky0(page, size, collected);
+        User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
+        return blogService.getBlogPageOfUser(page, size, sort, options, criiky0.getUserId());
     }
 
     /**
@@ -188,6 +195,7 @@ public class BlogController {
 
     /**
      * 查询criiky0的TimeLine
+     * 
      * @return
      */
     @GetMapping("/criiky0/timeline")
@@ -197,16 +205,18 @@ public class BlogController {
 
     /**
      * 获取指定menu下的blogs
+     * 
      * @param menuId
      * @return
      */
     @GetMapping("/certain_menu")
-    public Result<HashMap<String,List<BlogDTO>>> getBlogsOfMenu(@RequestParam("menu_id") Long menuId){
+    public Result<HashMap<String, List<BlogDTO>>> getBlogsOfMenu(@RequestParam("menu_id") Long menuId) {
         return blogService.getBlogDTOOfMenu(menuId);
     }
 
     /**
      * 修改排序
+     * 
      * @param idList
      * @return
      */
@@ -217,14 +227,15 @@ public class BlogController {
 
     /**
      * 获取criiky0的blog数量
+     * 
      * @return
      */
     @GetMapping("/criiky0/count")
-    public Result<HashMap<String,Long>> getCountOfCriiky0(){
+    public Result<HashMap<String, Long>> getCountOfCriiky0() {
         User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
         long count = blogService.count(new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, criiky0.getUserId()));
         HashMap<String, Long> map = new HashMap<>();
-        map.put("count",count);
+        map.put("count", count);
         return Result.ok(map);
     }
 }

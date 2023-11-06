@@ -36,7 +36,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/blog/certain_menu",
                     "/api/comment/post", "/api/comment/browse", "/api/comment/curblog/**",
                     "/api/comment/single/**","/api/comment/emoji",
-                    "/api/oss/callback");
+                    "/api/oss/callback",
+                    "/api/image/criiky0");
     }
 
 }

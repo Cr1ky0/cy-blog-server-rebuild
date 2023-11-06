@@ -9,19 +9,29 @@
         from blog
     </sql>
 
+    <sql id="query_map">
+        <if test="queryMap != null">
+            <foreach collection="queryMap" index="key" item="value">
+                <if test="key != null and value != null">
+                    and ${key} = #{value}
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
     <resultMap id="BaseResultMap" type="com.criiky0.pojo.Blog">
-            <id property="blogId" column="blog_id" jdbcType="BIGINT"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="content" column="content" jdbcType="VARCHAR"/>
-            <result property="likes" column="likes" jdbcType="INTEGER"/>
-            <result property="views" column="views" jdbcType="INTEGER"/>
-            <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
-            <result property="updateAt" column="update_at" jdbcType="TIMESTAMP"/>
-            <result property="sort" column="sort" jdbcType="INTEGER"/>
-            <result property="version" column="version" jdbcType="INTEGER"/>
-            <result property="deleted" column="deleted" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
-            <result property="menuId" column="menu_id" jdbcType="BIGINT"/>
+        <id property="blogId" column="blog_id" jdbcType="BIGINT"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="likes" column="likes" jdbcType="INTEGER"/>
+        <result property="views" column="views" jdbcType="INTEGER"/>
+        <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
+        <result property="updateAt" column="update_at" jdbcType="TIMESTAMP"/>
+        <result property="sort" column="sort" jdbcType="INTEGER"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="deleted" column="deleted" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="menuId" column="menu_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -32,20 +42,23 @@
     </sql>
 
     <select id="findMaxSort" resultType="java.lang.Integer">
-        select max(sort) as max_sort from blog
-            where menu_id = #{menuId} and deleted = 0;
+        select max(sort) as max_sort
+        from blog
+        where menu_id = #{menuId}
+          and deleted = 0;
     </select>
 
     <update id="deleteAllOfMenu">
-        update blog set deleted = 1
-            where menu_id = #{menuId};
+        update blog
+        set deleted = 1
+        where menu_id = #{menuId};
     </update>
 
     <select id="selectCollectedBlogDTO" resultType="blogDTO">
         <include refid="select_dto"/>
         where user_id = #{userId}
-          and collected = true
-          and deleted = 0;
+        and collected = true
+        and deleted = 0;
     </select>
 
     <select id="selectTimeLine" resultType="blogDTO">
@@ -60,5 +73,24 @@
         where menu_id = #{menuId}
         and deleted = 0
         order by sort asc;
+    </select>
+
+    <select id="selectPageOfUser" resultType="map" parameterType="map">
+        select *
+        from blog
+        where user_id = #{userId} and deleted = 0
+        <include refid="query_map"/>
+        <choose>
+            <when test="sort != null and sort == 'likes'">
+                order by likes desc
+            </when>
+            <when test="sort != null and sort == 'views'">
+                order by views desc
+            </when>
+            <otherwise>
+                order by create_at desc
+            </otherwise>
+        </choose>
+
     </select>
 </mapper>

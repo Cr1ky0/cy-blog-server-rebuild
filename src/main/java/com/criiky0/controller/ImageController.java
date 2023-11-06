@@ -1,10 +1,13 @@
 package com.criiky0.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.criiky0.pojo.Image;
 import com.criiky0.pojo.OssConfig;
+import com.criiky0.pojo.User;
 import com.criiky0.service.ImageService;
 import com.criiky0.service.OssConfigService;
+import com.criiky0.service.UserService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import jakarta.validation.Valid;
@@ -22,16 +25,19 @@ public class ImageController {
 
     private ImageService imageService;
 
+    private UserService userService;
     private OssConfigService ossConfigService;
 
     @Autowired
-    public ImageController(ImageService imageService, OssConfigService ossConfigService) {
+    public ImageController(ImageService imageService, UserService userService, OssConfigService ossConfigService) {
         this.imageService = imageService;
+        this.userService = userService;
         this.ossConfigService = ossConfigService;
     }
 
     /**
      * 上传单张photo
+     * 
      * @param image
      * @param userId
      * @return
@@ -57,6 +63,7 @@ public class ImageController {
 
     /**
      * 批量上传
+     * 
      * @param images
      * @param userId
      * @return
@@ -69,6 +76,7 @@ public class ImageController {
 
     /**
      * 删除photo
+     * 
      * @param imageId
      * @return
      */
@@ -79,20 +87,35 @@ public class ImageController {
         if (image == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
-        return imageService.deletePhoto(imageId,userId);
+        return imageService.deletePhoto(imageId, userId);
     }
 
     /**
      * 批量删除
+     * 
      * @param idList
      * @param userId
      * @return
      */
     @DeleteMapping("/many")
-    public Result<ResultCodeEnum> deletePhotos(@RequestBody List<Long> idList,@RequestAttribute("userid") Long userId) {
+    public Result<ResultCodeEnum> deletePhotos(@RequestBody List<Long> idList,
+        @RequestAttribute("userid") Long userId) {
         if (idList.isEmpty()) {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
-        return imageService.deletePhotos(idList,userId);
+        return imageService.deletePhotos(idList, userId);
+    }
+
+    /**
+     * 获取criiky0相片分页
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("/criiky0")
+    public Result<HashMap<String, Object>> getImagesOfCriiky0(@RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "size", defaultValue = "5") Integer size) {
+        User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
+        return imageService.selectPage(page, size, criiky0.getUserId());
     }
 }

@@ -6,7 +6,9 @@ import com.aliyun.oss.common.auth.CredentialsProviderFactory;
 import com.aliyun.oss.common.auth.DefaultCredentialProvider;
 import com.aliyun.oss.common.comm.ResponseMessage;
 import com.aliyun.oss.model.VoidResult;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.mapper.OssConfigMapper;
 import com.criiky0.pojo.Image;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -122,5 +125,19 @@ public class ImageServiceImpl extends ServiceImpl<ImageMapper, Image> implements
             }
         }
         return Result.ok(null);
+    }
+
+    @Override
+    public Result<HashMap<String, Object>> selectPage(Integer page, Integer size, Long userId) {
+        Page<Image> myPage = new Page<>(page, size);
+        imageMapper.selectPage(myPage,
+            new LambdaQueryWrapper<Image>().eq(Image::getUserId, userId).orderByDesc(Image::getPhotoTime));
+        HashMap<String, Object> pageMap = new HashMap<>();
+        pageMap.put("records", myPage.getRecords());
+        pageMap.put("pageNum", myPage.getCurrent());
+        pageMap.put("pageSize", myPage.getSize());
+        pageMap.put("totalPage", myPage.getPages());
+        pageMap.put("totalSize", myPage.getTotal());
+        return Result.ok(pageMap);
     }
 }

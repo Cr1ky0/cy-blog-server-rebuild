@@ -231,9 +231,10 @@ public class BlogController {
      * @return
      */
     @GetMapping("/criiky0/count")
-    public Result<HashMap<String, Long>> getCountOfCriiky0() {
+    public Result<HashMap<String, Long>>
+        getCountOfCriiky0(@RequestParam(value = "options", defaultValue = "") String options) {
         User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
-        long count = blogService.count(new LambdaQueryWrapper<Blog>().eq(Blog::getUserId, criiky0.getUserId()));
+        long count = blogService.countByUserWithOptions(criiky0.getUserId(),options);
         HashMap<String, Long> map = new HashMap<>();
         map.put("count", count);
         return Result.ok(map);

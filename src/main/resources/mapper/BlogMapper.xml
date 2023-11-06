@@ -104,4 +104,10 @@
         GROUP BY b.blog_id, b.title
         HAVING commentCount > 0
     </select>
+    <select id="countByUserWithOptions" resultType="long">
+        select COUNT(*) as count
+        from blog
+        where user_id = #{userId} and deleted = 0
+        <include refid="query_map"/>
+    </select>
 </mapper>

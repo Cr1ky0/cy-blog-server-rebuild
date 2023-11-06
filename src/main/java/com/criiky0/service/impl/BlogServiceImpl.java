@@ -295,4 +295,10 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         map.put("totalSize", blogPage.getTotal());
         return Result.ok(map);
     }
+
+    @Override
+    public long countByUserWithOptions(Long userId, String options) {
+        Map<String, String> queryMap = QueryHelper.filterOptions(options);
+        return blogMapper.countByUserWithOptions(userId,queryMap);
+    }
 }

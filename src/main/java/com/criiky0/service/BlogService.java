@@ -37,4 +37,6 @@ public interface BlogService extends IService<Blog> {
     Result<ResultCodeEnum> sort(List<Long> idList, Long userId);
 
     Result<HashMap<String, Object>> getBlogHasCommentOfUser(Integer page,Integer size,Long userId);
+
+    long countByUserWithOptions(Long userId, String options);
 }

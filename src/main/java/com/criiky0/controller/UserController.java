@@ -2,6 +2,7 @@ package com.criiky0.controller;
 
 import com.alibaba.druid.util.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.criiky0.pojo.User;
 import com.criiky0.pojo.dto.UserDTO;
 import com.criiky0.pojo.vo.LoginVo;
@@ -360,6 +361,7 @@ public class UserController {
 
     /**
      * 根据Id获取UserInfo
+     * 
      * @param userId
      * @return
      */
@@ -374,10 +376,34 @@ public class UserController {
         return Result.ok(map);
     }
 
+    /**
+     * 更新邮箱
+     * 
+     * @param updateEmailVo
+     * @return
+     */
     @PatchMapping("/email")
-    public Result<ResultCodeEnum> updateEmail(@RequestBody UpdateEmailVo updateEmailVo) {
-        // TODO:更新邮箱
-        return null;
+    public Result<HashMap<String,User>> updateEmail(@RequestBody UpdateEmailVo updateEmailVo,
+        @RequestAttribute("userid") Long userId, HttpSession session) {
+        // 验证code
+        Integer code = (Integer)session.getAttribute("verify-code");
+        if (!Objects.equals(code, updateEmailVo.getCode())) {
+            return Result.build(null, ResultCodeEnum.CODE_ERROR);
+        }
+        // 验证邮箱
+        String email = session.getAttribute("verify-email").toString();
+        if (!email.equals(updateEmailVo.getNewEmail())) {
+            return Result.build(null, ResultCodeEnum.EMAIL_NOT_CORRECT);
+        }
+        boolean updated = userService.update(new LambdaUpdateWrapper<User>().eq(User::getUserId, userId).set(User::getEmail,
+                updateEmailVo.getNewEmail()));
+        if(!updated){
+            return Result.build(null,400,"因未知原因，邮箱更新失败！");
+        }
+        User user = userService.getById(userId);
+        HashMap<String, User> map = new HashMap<>();
+        map.put("user",user);
+        return Result.ok(map);
     }
 
     /**

@@ -56,7 +56,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         int insert = ossConfigMapper.insert(ossConfig);
         if (insert > 0) {
             HashMap<String, OssConfig> map = new HashMap<>();
-            map.put("OSSConfig", ossConfig);
+            map.put("config", ossConfig);
             return Result.ok(map);
         }
         return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);

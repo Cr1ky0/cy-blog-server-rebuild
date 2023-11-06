@@ -108,14 +108,31 @@ public class ImageController {
 
     /**
      * 获取criiky0相片分页
+     * 
      * @param page
      * @param size
      * @return
      */
     @GetMapping("/criiky0")
-    public Result<HashMap<String, Object>> getImagesOfCriiky0(@RequestParam(value = "page", defaultValue = "1") Integer page,
+    public Result<HashMap<String, Object>> getImagesOfCriiky0(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "5") Integer size) {
         User criiky0 = userService.getOne(new LambdaQueryWrapper<User>().eq(User::getUsername, "criiky0"));
         return imageService.selectPage(page, size, criiky0.getUserId());
+    }
+
+    /**
+     * 获取当前用户照片分页
+     * @param page
+     * @param size
+     * @param userId
+     * @return
+     */
+    @GetMapping
+    public Result<HashMap<String, Object>> getImagePageOfUser(
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "size", defaultValue = "5") Integer size, @RequestAttribute("userid") Long userId) {
+        User user = userService.getById(userId);
+        return imageService.selectPage(page, size, user.getUserId());
     }
 }

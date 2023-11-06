@@ -35,4 +35,6 @@ public interface BlogService extends IService<Blog> {
     Result<HashMap<String, List<BlogDTO>>> getBlogDTOOfMenu(Long menuId);
 
     Result<ResultCodeEnum> sort(List<Long> idList, Long userId);
+
+    Result<HashMap<String, Object>> getBlogHasCommentOfUser(Integer page,Integer size,Long userId);
 }

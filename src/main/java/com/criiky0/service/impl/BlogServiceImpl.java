@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.mapper.MenuMapper;
@@ -280,5 +281,18 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
             return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
         }
         return Result.ok(null);
+    }
+
+    @Override
+    public Result<HashMap<String, Object>> getBlogHasCommentOfUser(Integer page, Integer size, Long userId) {
+        Page<Blog> blogPage = new Page<>(page, size);
+        blogMapper.selectBlogHasCommentOfUser(blogPage, userId);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("records", blogPage.getRecords());
+        map.put("currentPage", blogPage.getCurrent());
+        map.put("pageSize", blogPage.getSize());
+        map.put("totalPage", blogPage.getPages());
+        map.put("totalSize", blogPage.getTotal());
+        return Result.ok(map);
     }
 }

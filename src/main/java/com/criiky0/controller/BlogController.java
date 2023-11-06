@@ -238,4 +238,18 @@ public class BlogController {
         map.put("count", count);
         return Result.ok(map);
     }
+
+    /**
+     * 查询有comment的blog
+     * 
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("/hascomment")
+    public Result<HashMap<String, Object>> getBlogHasCommentOfUser(@RequestAttribute("userid") Long userId,
+        @RequestParam(value = "page", defaultValue = "1") Integer page,
+        @RequestParam(value = "size", defaultValue = "10") Integer size) {
+        return blogService.getBlogHasCommentOfUser(page, size, userId);
+    }
 }

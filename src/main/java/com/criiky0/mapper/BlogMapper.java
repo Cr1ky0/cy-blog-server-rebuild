@@ -41,4 +41,6 @@ public interface BlogMapper extends BaseMapper<Blog> {
 
     @MapKey("blogs")
     IPage<Map> selectPageOfUser(IPage<Blog> page, Long userId, String sort, Map<String, String> queryMap);
+
+    IPage<Map> selectBlogHasCommentOfUser(IPage<Blog> page,Long userId);
 }

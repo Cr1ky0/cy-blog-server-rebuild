@@ -91,6 +91,17 @@
                 order by create_at desc
             </otherwise>
         </choose>
+    </select>
 
+    <select id="selectBlogHasCommentOfUser" resultType="map">
+        SELECT b.blog_id           as blogId,
+               b.title,
+               b.menu_id           as menuId,
+               b.user_id           as userId,
+               COUNT(c.comment_id) AS commentCount
+        FROM blog b
+                 LEFT JOIN comment c ON b.blog_id = c.blog_id
+        GROUP BY b.blog_id, b.title
+        HAVING commentCount > 0
     </select>
 </mapper>

@@ -33,7 +33,6 @@ public class OSSController {
 
     /**
      * 添加config
-     *
      * @param ossConfig
      * @return
      */
@@ -59,7 +58,6 @@ public class OSSController {
 
     /**
      * 获取Policy
-     * 
      * @return
      */
     @GetMapping("/policy")

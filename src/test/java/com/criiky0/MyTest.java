@@ -1,9 +1,13 @@
 package com.criiky0;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import co.elastic.clients.elasticsearch.core.search.Hit;
+import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -106,8 +110,7 @@ public class MyTest {
         Blog blog = blogMapper.selectById(1718584592037732354L);
         try {
             BlogDoc blogDoc = new BlogDoc(blog.getTitle(), blog.getContent());
-            response = client.update(u -> u.index("blogs").id(blog.getBlogId().toString())
-                    .doc(blogDoc), BlogDoc.class);
+            response = client.update(u -> u.index("blogs").id(blog.getBlogId().toString()).doc(blogDoc), BlogDoc.class);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -120,7 +123,8 @@ public class MyTest {
     public void test11() throws IOException {
         ElasticsearchClient client = ElasticSearchUtil.client;
         Blog blog = blogMapper.selectById(1718584592037732354L);
-        GetResponse<BlogDoc> response = client.get(g -> g.index("blogs").id(blog.getBlogId().toString()), BlogDoc.class);
+        GetResponse<BlogDoc> response =
+            client.get(g -> g.index("blogs").id(blog.getBlogId().toString()), BlogDoc.class);
         System.out.println(response.source());
     }
 
@@ -129,15 +133,15 @@ public class MyTest {
         ElasticsearchClient client = ElasticSearchUtil.client;
         client.indices().delete(c -> c.index("blogs"));
     }
-    
+
     @Test
-    public void test13(){
+    public void test13() {
         Integer maxSort = blogMapper.findMaxSort(1718504282029727746L);
         System.out.println(maxSort);
     }
 
     @Test
-    public void test14(){
+    public void test14() {
         Page<Blog> myPage = new Page<>(1, 5);
         Page<Blog> blogPage = blogMapper.selectPage(myPage, null);
         System.out.println(blogPage.getRecords());
@@ -148,15 +152,30 @@ public class MyTest {
     }
 
     @Test
-    public void test15(){
+    public void test15() {
         QueryWrapper<OssConfig> queryWrapper = new QueryWrapper<>();
         OssConfig config = ossConfigMapper.selectOne(queryWrapper);
         System.out.println(config);
     }
 
     @Test
-    public void test16(){
+    public void test16() {
         MenuDTO menuDTO = menuMapper.selectMenuWithDetails(1720737101854478337L);
         System.out.println(menuDTO);
+    }
+
+    @Test
+    public void test17() throws IOException {
+        String searchText = "mybatis";
+        ElasticsearchClient client = ElasticSearchUtil.client;
+
+        SearchResponse<BlogDoc> search = client.search(
+            s -> s.index("blogs")
+                .query(q -> q.multiMatch(
+                    t -> t.fields("content", "title").query(searchText).type(TextQueryType.BestFields))),
+            BlogDoc.class);
+        List<Hit<BlogDoc>> hits = search.hits().hits();
+        System.out.println(hits);
+
     }
 }

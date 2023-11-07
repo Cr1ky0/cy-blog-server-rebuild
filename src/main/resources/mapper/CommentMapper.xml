@@ -3,6 +3,9 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.criiky0.mapper.CommentMapper">
+    <sql id="select_all">
+
+    </sql>
 
     <resultMap id="BaseResultMap" type="com.criiky0.pojo.Comment">
         <id property="commentId" column="comment_id" jdbcType="BIGINT"/>

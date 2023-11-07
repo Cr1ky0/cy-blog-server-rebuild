@@ -84,7 +84,7 @@ public class MenuController {
         HashMap<String, MenuDTO> map = new HashMap<>();
         Menu menu = opt.get();
         MenuDTO menuDTO = new MenuDTO(menu.getMenuId(), menu.getTitle(), menu.getIcon(), menu.getColor(),
-            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(), null, null);
+            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(), menu.getCreateAt(), null, null);
         List<MenuDTO> subMenu = menuService.findSubMenu(menuDTO);
         menuDTO.setSubMenu(subMenu);
         map.put("menu", menuDTO);
@@ -111,6 +111,7 @@ public class MenuController {
 
     /**
      * 修改排序
+     * 
      * @param idList
      * @return
      */

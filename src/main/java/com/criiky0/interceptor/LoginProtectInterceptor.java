@@ -2,6 +2,7 @@ package com.criiky0.interceptor;
 
 import com.criiky0.utils.LoginProtectUtil;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -34,9 +35,12 @@ public class LoginProtectInterceptor implements HandlerInterceptor {
 
             // cookie处理
             Cookie jwtCookie = LoginProtectUtil.getCookieByName(request, "token");
+            // 获取session
+            HttpSession session = request.getSession();
+            Object attribute = session.getAttribute("token");
             // 未登录
             Result<Object> r = Result.build(null, ResultCodeEnum.NOT_LOGIN);
-            if (jwtCookie == null) {
+            if (jwtCookie == null || attribute == null) {
                 LoginProtectUtil.writeToResponse(response, r);
                 return false;
             }

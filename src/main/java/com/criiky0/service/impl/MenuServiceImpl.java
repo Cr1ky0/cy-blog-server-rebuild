@@ -179,7 +179,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         if (!menu.getUserId().equals(userId))
             return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
         LambdaUpdateWrapper<Menu> wrapper = new LambdaUpdateWrapper<>();
-        if (menu.getBelongMenuId() == 0) {
+        if (menu.getBelongMenuId() == null) {
             updateMenuVO.setBelongMenuId(null);
             level = 1;
         }

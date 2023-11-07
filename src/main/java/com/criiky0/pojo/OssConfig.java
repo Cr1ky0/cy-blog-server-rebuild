@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -14,6 +16,7 @@ import lombok.Data;
 @Data
 public class OssConfig implements Serializable {
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     @NotBlank(message = "endpoint不能为空！")

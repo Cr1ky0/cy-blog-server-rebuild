@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class Blog implements Serializable {
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long blogId;
 
     @Length(min=1,max = 30,message = "博客标题过长或过短！")
@@ -33,8 +37,10 @@ public class Blog implements Serializable {
 
     private Boolean collected;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createAt;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateAt;
 
     private Integer sort;
@@ -44,9 +50,11 @@ public class Blog implements Serializable {
 
     private Integer deleted;
 
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @NotNull(message = "所属菜单ID不能为空")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long menuId;
 
     private static final long serialVersionUID = 1L;

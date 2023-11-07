@@ -108,15 +108,15 @@ public class MyTest {
         ElasticsearchClient client = ElasticSearchUtil.client;
         UpdateResponse<BlogDoc> response;
         Blog blog = blogMapper.selectById(1718584592037732354L);
-        try {
-            BlogDoc blogDoc = new BlogDoc(blog.getTitle(), blog.getContent());
-            response = client.update(u -> u.index("blogs").id(blog.getBlogId().toString()).doc(blogDoc), BlogDoc.class);
+        // try {
+        // BlogDoc blogDoc = new BlogDoc(blog.getTitle(), blog.getContent());
+        // response = client.update(u -> u.index("blogs").id(blog.getBlogId().toString()).doc(blogDoc), BlogDoc.class);
+        //
+        // } catch (IOException e) {
+        // throw new RuntimeException(e);
+        // }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        System.out.println(response.result());
+        // System.out.println(response.result());
     }
 
     @Test
@@ -169,11 +169,12 @@ public class MyTest {
         String searchText = "mybatis";
         ElasticsearchClient client = ElasticSearchUtil.client;
 
-        SearchResponse<BlogDoc> search = client.search(
-            s -> s.index("blogs")
-                .query(q -> q.multiMatch(
-                    t -> t.fields("content", "title").query(searchText).type(TextQueryType.BestFields))),
-            BlogDoc.class);
+        SearchResponse<BlogDoc> search =
+            client.search(
+                s -> s.index("blogs")
+                    .query(q -> q.multiMatch(
+                        t -> t.fields("content", "title").query(searchText).type(TextQueryType.BestFields))),
+                BlogDoc.class);
         List<Hit<BlogDoc>> hits = search.hits().hits();
         System.out.println(hits);
 

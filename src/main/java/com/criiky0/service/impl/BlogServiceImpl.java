@@ -29,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author criiky0
@@ -89,7 +86,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
             IndexResponse response;
             try {
                 response = client.index(i -> i.index("blogs").id(blog.getBlogId().toString())
-                    .document(new BlogDoc(blog.getTitle(), blog.getContent())));
+                    .document(new BlogDoc(blog.getTitle(), blog.getContent(), menu.getTitle())));
             } catch (IOException e) {
                 // 失败回滚
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -158,13 +155,17 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         int update = blogMapper.update(null, updateWrapper);
         if (update > 0) {
             Blog updatedBlog = blogMapper.selectById(updateBlogVO.getBlogId());
+            Menu menu = menuMapper.selectById(updatedBlog.getMenuId());
             // ES索引修改
-            if (updateBlogVO.getContent() != null || updateBlogVO.getTitle() != null) {
+            List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
+                    updateBlogVO.getMenuId());
+            boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
+            if (!isAllNull) {
                 ElasticsearchClient client = ElasticSearchUtil.client;
                 UpdateResponse<BlogDoc> response;
                 try {
                     response = client.update(u -> u.index("blogs").id(updatedBlog.getBlogId().toString())
-                        .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent())), BlogDoc.class);
+                        .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent(),menu.getTitle())), BlogDoc.class);
                 } catch (IOException e) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
@@ -299,6 +300,6 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     @Override
     public long countByUserWithOptions(Long userId, String options) {
         Map<String, String> queryMap = QueryHelper.filterOptions(options);
-        return blogMapper.countByUserWithOptions(userId,queryMap);
+        return blogMapper.countByUserWithOptions(userId, queryMap);
     }
 }

@@ -15,6 +15,7 @@
         <result property="deleted" column="deleted" jdbcType="INTEGER"/>
         <result property="belongMenuId" column="belong_menu_id" jdbcType="BIGINT"/>
         <result property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="createAt" column="create_at" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <resultMap id="BlogDTOResultMap" type="blogDTO">
@@ -35,6 +36,7 @@
         <result property="sort" column="sort"/>
         <result property="belongMenuId" column="belong_menu_id"/>
         <result property="userId" column="user_id"/>
+        <result property="createAt" column="create_at"/>
         <!-- Collection for blogs -->
         <collection property="blogs" ofType="blogDTO" column="menu_id" select="selectBlogsByMenu"/>
         <!-- Self association for subMenu -->
@@ -45,7 +47,7 @@
         menu_id,title,icon,
         color,level,sort,
         version,deleted,belong_menu_id,
-        user_id
+        user_id,create_at
     </sql>
 
 
@@ -113,21 +115,24 @@
     <select id="selectMenuWithDetails" resultMap="MenuDTOResultMap">
         SELECT *
         FROM menu
-        WHERE menu_id = #{menuId} and deleted = 0;
+        WHERE menu_id = #{menuId}
+          and deleted = 0;
     </select>
 
     <!-- Recursively select sub menus -->
     <select id="selectSubMenus" resultMap="MenuDTOResultMap">
         SELECT *
         FROM menu
-        WHERE belong_menu_id = #{menuId} and deleted = 0;
+        WHERE belong_menu_id = #{menuId}
+          and deleted = 0;
     </select>
 
     <!-- Select blogs by menu -->
     <select id="selectBlogsByMenu" resultMap="BlogDTOResultMap">
         SELECT *
         FROM blog
-        WHERE menu_id = #{menuId} and deleted = 0;
+        WHERE menu_id = #{menuId}
+          and deleted = 0;
     </select>
 
 </mapper>

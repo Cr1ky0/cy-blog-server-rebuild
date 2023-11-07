@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class BlogDoc {
     private String title;
     private String content;
+    private String menuTitle;
 }

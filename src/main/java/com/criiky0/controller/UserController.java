@@ -148,7 +148,6 @@ public class UserController {
 
     /**
      * 用户登录
-     * 
      * @param loginVo
      */
     @PostMapping("login")
@@ -173,8 +172,14 @@ public class UserController {
             // 删除session
             session.removeAttribute("login_code");
             // 添加过期时间
+            Long expireTime = jwtHelper.getExpiration(token);
             HashMap<String, Long> map = new HashMap<>();
-            map.put("expireTime", jwtHelper.getExpiration(token));
+            map.put("expireTime", expireTime);
+            // 添加Session
+            session.setAttribute("token",token);
+            // 设置过期时间
+            int time = (int)(expireTime - System.currentTimeMillis());
+            session.setMaxInactiveInterval(time);
             return Result.ok(map);
         }
         return result;
@@ -220,7 +225,13 @@ public class UserController {
             response.addCookie(cookie);
             // 添加过期时间
             HashMap<String, Long> map = new HashMap<>();
-            map.put("expireTime", jwtHelper.getExpiration(token));
+            Long expireTime = jwtHelper.getExpiration(token);
+            map.put("expireTime", expireTime);
+            // 添加Session
+            session.setAttribute("token",token);
+            // 设置过期时间
+            int time = (int)(expireTime - System.currentTimeMillis());
+            session.setMaxInactiveInterval(time);
             return Result.ok(map);
         }
         // 移除session
@@ -233,7 +244,6 @@ public class UserController {
 
     /**
      * 根据当前token获取用户数据
-     * 
      * @param userId 拦截器解析出来的userId
      */
     @GetMapping("info")
@@ -295,7 +305,6 @@ public class UserController {
 
     /**
      * 获取头像，直接返回图片流
-     * 
      * @param userId 拦截器
      */
     @GetMapping("avatar")
@@ -305,7 +314,6 @@ public class UserController {
 
     /**
      * 更新用户nickname或brief
-     * 
      * @param user 请求体
      * @param userId 拦截器
      */
@@ -419,4 +427,16 @@ public class UserController {
         }
         getCertainUserAvatar(user.getUserId());
     }
+
+    /**
+     * logout
+     * @param session
+     * @return
+     */
+    @DeleteMapping("/logout")
+    public Result<ResultCodeEnum> logout(HttpSession session){
+        session.removeAttribute("token");
+        return Result.ok(null);
+    }
+
 }

@@ -35,7 +35,6 @@ public class BlogController {
 
     /**
      * 添加博客（同时添加至ES索引）
-     * 
      * @param blog
      * @param userId
      * @return

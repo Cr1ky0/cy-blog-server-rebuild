@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -17,6 +20,7 @@ import org.hibernate.validator.constraints.Length;
 @Data
 public class User implements Serializable {
     @TableId
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 
     @Length(min=3,max=20,message = "用户名!")
@@ -40,6 +44,7 @@ public class User implements Serializable {
 
     private Object role;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createAt;
 
     @Version

@@ -5,7 +5,7 @@
 <mapper namespace="com.criiky0.mapper.BlogMapper">
 
     <sql id="select_dto">
-        select blog_id, title, create_at, sort
+        select CAST(blog_id as CHAR) as blogId, title, create_at as createAt, sort, menu_id as menuID
         from blog
     </sql>
 
@@ -75,9 +75,8 @@
         order by sort asc;
     </select>
 
-    <select id="selectPageOfUser" resultType="map" parameterType="map">
-        select *
-        from blog
+    <select id="selectPageOfUser" resultType="blog">
+        select * from blog
         where user_id = #{userId} and deleted = 0
         <include refid="query_map"/>
         <choose>

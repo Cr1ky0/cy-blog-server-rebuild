@@ -20,7 +20,7 @@
 
 ### API
 
-1. 发送邮箱验证码
+1. 发送注册邮箱验证码
 
    ``````
    /code
@@ -37,8 +37,13 @@
    Post
    请求参数：
    {
-       username/email:
+       userinfo:（eamil或username）
        password:
+       verificationCode:
+   }
+   返回参数
+   {
+   	expireTime
    }
    ```
 
@@ -57,7 +62,7 @@
    }
    返回参数
    {
-   	token,
+   	expireTime,
    }
    ``````
 
@@ -68,13 +73,15 @@
    Get
    返回参数
    {
-      	userId,
-       username,
-       nickname,
-       brief,
-       email,
-       avatar,
-       role,
+      	user:{
+           userId,
+           username,
+           nickname,
+           brief,
+           email,
+           avatar,
+           role,
+      	}
    }
    ```
 
@@ -127,6 +134,103 @@
    }
    ```
 
+9. 获取登录验证码
+
+   ```
+   /verify
+   GET
+   
+   ```
+
+10. 获取criiky0的个人信息
+
+    ```
+    /criiky0
+    GET
+    返回参数
+    {
+       	user:{
+            userId,
+            username,
+            nickname,
+            brief,
+            email,
+            avatar,
+            role,
+       	}
+    }
+    ```
+
+11. 获取criiky0的头像
+
+    ```
+    /criiky0/avatar
+    GET
+    返回参数
+    ArrayBuffer
+    ```
+
+12. 修改密码（通过token）
+
+    ```
+    /password
+    PATCH
+    请求参数
+    {
+    	oldPsw:
+    	newPsw:
+    	pswConfirm:
+    }
+    ```
+
+13. 修改Email（根据token）
+
+    ```
+    /email
+    PATCH
+    请求参数
+    {
+    	newEmail,
+    	code,
+    }
+    返回参数
+    {
+    	user:{
+    		...
+    	}
+    }
+    ```
+
+14. 根据Id获取userInfo
+
+    ```
+    /{id}
+    GET
+    response:{
+    	user:{
+    		...
+    	}
+    }
+    ```
+
+15. 根据id获取avatar
+
+    ```
+    /avatar/{id}
+    GET
+    返回参数
+    ArrayBuffer
+    ```
+
+16. 登出(移除session)
+
+    ```
+    /logout
+    DELETE
+    ```
+
+
+
 
 ## Menu模块
 
@@ -160,7 +264,7 @@
    }
    ```
 
-2. 删除菜单
+2. 删除菜单（递归删除所有子菜单和blogs）
 
    ```
    /
@@ -190,7 +294,7 @@
 4. 获取对应ID的菜单
 
    ```
-   /{id}
+   /single/{id}
    GET
    返回参数
    {
@@ -214,7 +318,7 @@
    	title,
    	icon,
    	color,
-   	belongMenuId
+   	belongMenuId, // 设置为0则表示修改成null，即最上层菜单
    }
    返回参数
    {
@@ -223,6 +327,17 @@
    	}
    }
    ```
+
+6. 排序
+
+   ```
+   /sort
+   PATCH
+   请求参数
+   [Long,...]
+   ```
+
+
 
 ##  Blog模块
 
@@ -314,7 +429,7 @@
    /criiky0
    GET
    请求参数(带collected参数并为true表示查询收藏的blog)
-   ?page=&size=&collected=false
+   ?page=&size=&sort=&options=collected:1
    返回参数
    {
    	"totalSize": 12,
@@ -366,6 +481,7 @@
    		{
    			blogId,
    			title,
+   			sort
    			createAt
    		}
    	]
@@ -386,6 +502,66 @@
    		}
    	]
    ```
+
+10. 获取指定menu下的所有BlogDTO
+
+    ```
+    /certain_menu
+    GET
+    ?menu_id
+    返回参数
+    {
+    	blogs:[
+    		{
+    			...
+    		}
+    	]
+    }
+    ```
+
+11. 排序
+
+    ```
+    /sort
+    PATCH
+    [Long,...]
+    ```
+
+12. 获取Criiky0博客数量
+
+    ```
+    /criiky0/count
+    GET
+    请求参数
+    ?options=collected:1
+    response:{
+    	count:0
+    }
+    ```
+
+13. 获取有评论的Blogs（根据token）
+
+    ```
+    /hascomment
+    GET
+    ?page=&size=
+    返回
+    {
+        "totalSize": 1,
+        "records": [
+            {
+                "commentCount": 2,
+                "blogId": 1720754339974189058,
+                "userId": 1717472052398432258,
+                "title": "12345666",
+                "menuId": 1720754169400233985
+        	}
+        ],
+        "totalPage": 1,
+        "pageSize": 10,
+        "currentPage": 1
+    }
+    ```
 
 
 
@@ -445,21 +621,46 @@
    }
    ```
 
-4. 获取当前博客的所有Comment
+4. 获取当前博客的Comment分页
 
    ```
    /curblog
    GET
    请求参数
-   ?blog_id=
+   ?blog_id=&page=&size=&sort=&options=
    返回参数
    {
-   	comments:[
-   		{
-   			...
-   			subComments:[{...}]
-   		}
-   	]
+   	"comments": [
+               {
+                   "commentId": 1721097578677723138,
+                   "content": "123",
+                   "likes": 0,
+                   "username": null,
+                   "brief": null,
+                   "createAt": "2023-11-05 17:30:13",
+                   "belongCommentId": null,
+                   "userId": null,
+                   "blogId": 1720754339974189058,
+                   "subComments": [
+                       {
+                           "commentId": 1721097614442553346,
+                           "content": "123",
+                           "likes": 0,
+                           "username": null,
+                           "brief": null,
+                           "createAt": "2023-11-05 17:30:22",
+                           "belongCommentId": 1721097578677723138,
+                           "userId": null,
+                           "blogId": 1720754339974189058,
+                           "subComments": []
+                       }
+                   ]
+               }
+           ],
+           "totalSize": 1,
+           "totalPage": 1,
+           "pageSize": 1,
+           "pageNum": 1
    }
    ```
 
@@ -485,17 +686,41 @@
    }
    ```
 
+7. 获取某个blog的评论计数
+
+   ```
+   /curblog/count
+   请求参数
+   ?blog_id=
+   返回参数
+   {
+   	count:0
+   }
+   ```
+
+8. 获取emoji
+
+   ```
+   /emoji
+   返回参数
+   {
+   	emojis:{
+   		...
+   	}
+   }
+   ```
 
 
-### OSSConfig
 
-#### 根路径
+## OSSConfig
+
+### 根路径
 
 ```
 /api/oss
 ```
 
-#### API
+### API
 
 1. 添加Config
 
@@ -511,6 +736,12 @@
    	dir, // 可选
    	callbackUrl // 可选
    }
+   返回参数
+   {
+   	config:{
+   		...
+   	}
+   }
    ```
 
 2. 获取Config
@@ -518,6 +749,11 @@
    ```
    /
    GET
+   {
+   	config:{
+   		...
+   	}
+   }
    ```
 
 3. 获取Policy
@@ -604,10 +840,114 @@
    /many
    DELETE
    请求参数
+   [id1,id2,...]
+   
+   ```
+
+5. 获取criiky0照片分页
+
+   ```
+   /criiky0
+   GET
+   请求参数
+   ?page=&size=
+   返回
    {
-   	photos:["id1","id2",...]
+   	"totalSize": 4,
+           "records": [
+               {
+                   "imageId": 1721091584954343426,
+                   "fileName": "blog_image/BDBTaGlj-GHj4vPAmwl_h.png",
+                   "endpoint": "oss-cn-chengdu.aliyuncs.com",
+                   "bucket": "criik-blog-image-storage",
+                   "uploadAt": "2023-11-05 17:06:24",
+                   "photoTime": "2023-11-05 17:06:24",
+                   "version": 1,
+                   "deleted": 0,
+                   "userId": 1717472052398432258
+               }
+           ],
+           "totalPage": 1,
+           "pageSize": 5,
+           "pageNum": 1		
    }
    ```
+
+6. 获取当前用户照片分页
+
+   ```
+   /
+   GET
+   请求参数
+   ?page=&size=
+   返回
+   {
+   	"totalSize": 4,
+           "records": [
+               {
+                   "imageId": 1721091584954343426,
+                   "fileName": "blog_image/BDBTaGlj-GHj4vPAmwl_h.png",
+                   "endpoint": "oss-cn-chengdu.aliyuncs.com",
+                   "bucket": "criik-blog-image-storage",
+                   "uploadAt": "2023-11-05 17:06:24",
+                   "photoTime": "2023-11-05 17:06:24",
+                   "version": 1,
+                   "deleted": 0,
+                   "userId": 1717472052398432258
+               }
+           ],
+           "totalPage": 1,
+           "pageSize": 5,
+           "pageNum": 1		
+   }
+   ```
+
+
+## ES模块
+
+### 根路径
+
+```
+/api/es
+```
+
+### API
+
+1. 按字段查询
+
+   ```
+   /search
+   ?field=
+   返回
+   {
+       "result": {
+           "test": [
+               {
+                   "id": 1721776501300305922,
+                   "title": "Mybatis自关联及他表关联查询",
+                   "content": "<resultMap",
+                   "menuTitle": "test"
+               },
+               {
+                   "id": 1721776503695253505,
+                   "title": "Mybatis自关联及他表关联查询",
+                   "content": "<resultMap",
+                   "menuTitle": "test"
+               }
+           ],
+           "12345": [
+               {
+                   "id": 1721774105031577602,
+                   "title": "<resultMap",
+                   "content": "Mybatis自关联及他表关联查询",
+                   "menuTitle": "12345"
+               },
+           ]
+       }
+   }
+   ```
+
+   
 
    
 

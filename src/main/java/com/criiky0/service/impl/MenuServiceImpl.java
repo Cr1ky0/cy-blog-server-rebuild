@@ -223,4 +223,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         return Result.ok(null);
     }
 
+    @Override
+    public MenuDTO getSingleMenuDTO(Long menuId) {
+        return menuMapper.selectMenuWithDetails(menuId);
+    }
+
 }

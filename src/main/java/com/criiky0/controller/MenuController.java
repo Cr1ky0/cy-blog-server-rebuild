@@ -71,7 +71,6 @@ public class MenuController {
 
     /**
      * 查找单个Menu
-     *
      * @param menuId
      * @return
      */
@@ -81,13 +80,14 @@ public class MenuController {
         if (opt.isEmpty()) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
+        MenuDTO menu = menuService.getSingleMenuDTO(menuId);
         HashMap<String, MenuDTO> map = new HashMap<>();
-        Menu menu = opt.get();
-        MenuDTO menuDTO = new MenuDTO(menu.getMenuId(), menu.getTitle(), menu.getIcon(), menu.getColor(),
-            menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(), menu.getCreateAt(), null, null);
-        List<MenuDTO> subMenu = menuService.findSubMenu(menuDTO);
-        menuDTO.setSubMenu(subMenu);
-        map.put("menu", menuDTO);
+        map.put("menu", menu);
+        // Menu menu = opt.get();
+        // MenuDTO menuDTO = new MenuDTO(menu.getMenuId(), menu.getTitle(), menu.getIcon(), menu.getColor(),
+        // menu.getLevel(), menu.getSort(), menu.getBelongMenuId(), menu.getUserId(), menu.getCreateAt(), null, null);
+        // List<MenuDTO> subMenu = menuService.findSubMenu(menuDTO);
+        // menuDTO.setSubMenu(subMenu);
         return Result.ok(map);
     }
 
@@ -111,6 +111,7 @@ public class MenuController {
 
     /**
      * 修改排序
+     * 
      * @param idList
      * @return
      */

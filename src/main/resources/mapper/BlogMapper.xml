@@ -93,11 +93,11 @@
     </select>
 
     <select id="selectBlogHasCommentOfUser" resultType="map">
-        SELECT b.blog_id           as blogId,
+        SELECT CAST(b.blog_id as CHAR) as blogId,
                b.title,
-               b.menu_id           as menuId,
-               b.user_id           as userId,
-               COUNT(c.comment_id) AS commentCount
+               CAST(b.menu_id as CHAR) as menuId,
+               CAST(b.user_id as CHAR) as userId,
+               COUNT(c.comment_id)     AS commentCount
         FROM blog b
                  LEFT JOIN comment c ON b.blog_id = c.blog_id
         GROUP BY b.blog_id, b.title

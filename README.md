@@ -7,7 +7,7 @@
 
 # 技术栈
 * 前端：Typescript + React + Redux + Antd
-* 后端：Spring + SpringMVC + Mybatis-Plus + SpringBoot
+* 后端：Spring + SpringMVC + Mybatis-Plus + SpringBoot + MySQL
 
 # 模块API
 ## User模块

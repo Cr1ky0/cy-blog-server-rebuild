@@ -199,7 +199,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
     @Override
-    public Result<ResultCodeEnum> sort(List<Long> idList,Long userId) {
+    public Result<ResultCodeEnum> sort(List<Long> idList, Long userId) {
         int count = 0;
         for (Long id : idList) {
             Menu menu = menuMapper.selectById(id);
@@ -207,17 +207,18 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
             }
-            if(!menu.getUserId().equals(userId)){
+            if (!menu.getUserId().equals(userId)) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                return Result.build(null,ResultCodeEnum.OPERATION_ERROR);
+                return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
             }
-            int update = menuMapper.update(null, new LambdaUpdateWrapper<Menu>().eq(Menu::getSort, count));
-            if(update > 0) {
+            int update = menuMapper.update(null,
+                new LambdaUpdateWrapper<Menu>().eq(Menu::getMenuId, id).set(Menu::getSort, count));
+            if (update > 0) {
                 count++;
                 continue;
             }
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+            return Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
         }
         return Result.ok(null);
     }

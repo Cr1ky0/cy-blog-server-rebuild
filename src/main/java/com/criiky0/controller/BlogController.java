@@ -139,7 +139,7 @@ public class BlogController {
     @PatchMapping("/browse")
     public Result<HashMap<String, Blog>> updateBlogBrowse(@RequestParam("blog_id") Long blogId,
         @RequestParam(value = "like", defaultValue = "true") boolean like,
-        @RequestParam(value = "plus", defaultValue = "true") boolean plus) {
+        @RequestParam(value = "plus", defaultValue = "false") boolean plus) {
         Blog blog = blogService.getById(blogId);
         if (blog == null)
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);

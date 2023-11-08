@@ -157,15 +157,17 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
             Blog updatedBlog = blogMapper.selectById(updateBlogVO.getBlogId());
             Menu menu = menuMapper.selectById(updatedBlog.getMenuId());
             // ES索引修改
-            List<Object> paramList = Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(),
-                    updateBlogVO.getMenuId());
+            List<Object> paramList =
+                Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(), updateBlogVO.getMenuId());
             boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
             if (!isAllNull) {
                 ElasticsearchClient client = ElasticSearchUtil.client;
                 UpdateResponse<BlogDoc> response;
                 try {
-                    response = client.update(u -> u.index("blogs").id(updatedBlog.getBlogId().toString())
-                        .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent(),menu.getTitle())), BlogDoc.class);
+                    response = client.update(
+                        u -> u.index("blogs").id(updatedBlog.getBlogId().toString())
+                            .doc(new BlogDoc(updatedBlog.getTitle(), updatedBlog.getContent(), menu.getTitle())),
+                        BlogDoc.class);
                 } catch (IOException e) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
@@ -273,7 +275,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
             }
-            int update = blogMapper.update(null, new LambdaUpdateWrapper<Blog>().eq(Blog::getSort, count));
+            int update = blogMapper.update(null,
+                new LambdaUpdateWrapper<Blog>().eq(Blog::getBlogId, id).set(Blog::getSort, count));
             if (update > 0) {
                 count++;
                 continue;

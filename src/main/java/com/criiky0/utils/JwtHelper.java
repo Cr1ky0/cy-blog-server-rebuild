@@ -1,9 +1,14 @@
+
 package com.criiky0.utils;
 
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +24,15 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "jwt.token")
 public class JwtHelper {
 
+    private EnvironmentChecker environmentChecker;
+
     private long tokenExpiration; // 有效时间,单位毫秒 1000毫秒 == 1秒
     private static final SecretKey KEY = Jwts.SIG.HS512.key().build(); // 当前程序签名秘钥（直接生成，每次重启服务器都会改变）
+
+    @Autowired
+    public JwtHelper(EnvironmentChecker environmentChecker) {
+        this.environmentChecker = environmentChecker;
+    }
 
     // 生成token字符串
     public String createToken(Long userId, String userRole) {
@@ -46,7 +58,7 @@ public class JwtHelper {
     }
 
     // 从token字符串中获取userRole
-    public String getUserRole(String token){
+    public String getUserRole(String token) {
         if (StringUtils.isEmpty(token) || isExpiration(token))
             return null;
 
@@ -69,10 +81,11 @@ public class JwtHelper {
     }
 
     // 返回到期时间
-    public Long getExpiration(String token){
+    public Long getExpiration(String token) {
         try {
             // 没有过期，有效，返回false，过期返回true
-            Date expiration = Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().getExpiration();
+            Date expiration =
+                Jwts.parser().verifyWith(KEY).build().parseSignedClaims(token).getPayload().getExpiration();
             return expiration.getTime();
         } catch (Exception e) {
             // 出现异常则返回当前时间

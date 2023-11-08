@@ -148,6 +148,7 @@ public class UserController {
 
     /**
      * 用户登录
+     * 
      * @param loginVo
      */
     @PostMapping("login")
@@ -176,7 +177,7 @@ public class UserController {
             HashMap<String, Long> map = new HashMap<>();
             map.put("expireTime", expireTime);
             // 添加Session
-            session.setAttribute("token",token);
+            session.setAttribute("token", token);
             // 设置过期时间
             int time = (int)(expireTime - System.currentTimeMillis());
             session.setMaxInactiveInterval(time);
@@ -228,7 +229,7 @@ public class UserController {
             Long expireTime = jwtHelper.getExpiration(token);
             map.put("expireTime", expireTime);
             // 添加Session
-            session.setAttribute("token",token);
+            session.setAttribute("token", token);
             // 设置过期时间
             int time = (int)(expireTime - System.currentTimeMillis());
             session.setMaxInactiveInterval(time);
@@ -244,6 +245,7 @@ public class UserController {
 
     /**
      * 根据当前token获取用户数据
+     * 
      * @param userId 拦截器解析出来的userId
      */
     @GetMapping("info")
@@ -264,7 +266,7 @@ public class UserController {
             return Result.build(null, ResultCodeEnum.PARAM_NULL_ERROR);
         }
 
-        if (file.getSize() > 2048) {
+        if (file.getSize() > 5 * 1024 * 1024) {
             return Result.build(null, ResultCodeEnum.AVATAR_TO_LARGE);
         }
 
@@ -305,6 +307,7 @@ public class UserController {
 
     /**
      * 获取头像，直接返回图片流
+     * 
      * @param userId 拦截器
      */
     @GetMapping("avatar")
@@ -314,6 +317,7 @@ public class UserController {
 
     /**
      * 更新用户nickname或brief
+     * 
      * @param user 请求体
      * @param userId 拦截器
      */
@@ -391,7 +395,7 @@ public class UserController {
      * @return
      */
     @PatchMapping("/email")
-    public Result<HashMap<String,User>> updateEmail(@RequestBody UpdateEmailVo updateEmailVo,
+    public Result<HashMap<String, User>> updateEmail(@RequestBody UpdateEmailVo updateEmailVo,
         @RequestAttribute("userid") Long userId, HttpSession session) {
         // 验证code
         Integer code = (Integer)session.getAttribute("verify-code");
@@ -403,19 +407,20 @@ public class UserController {
         if (!email.equals(updateEmailVo.getNewEmail())) {
             return Result.build(null, ResultCodeEnum.EMAIL_NOT_CORRECT);
         }
-        boolean updated = userService.update(new LambdaUpdateWrapper<User>().eq(User::getUserId, userId).set(User::getEmail,
-                updateEmailVo.getNewEmail()));
-        if(!updated){
-            return Result.build(null,400,"因未知原因，邮箱更新失败！");
+        boolean updated = userService.update(new LambdaUpdateWrapper<User>().eq(User::getUserId, userId)
+            .set(User::getEmail, updateEmailVo.getNewEmail()));
+        if (!updated) {
+            return Result.build(null, 400, "因未知原因，邮箱更新失败！");
         }
         User user = userService.getById(userId);
         HashMap<String, User> map = new HashMap<>();
-        map.put("user",user);
+        map.put("user", user);
         return Result.ok(map);
     }
 
     /**
      * 获取指定用户头像
+     * 
      * @param userId
      * @return
      */
@@ -423,18 +428,19 @@ public class UserController {
     public void getAvatarById(@PathVariable("id") Long userId) {
         User user = userService.getById(userId);
         if (user == null) {
-            LoginProtectUtil.writeToResponse(response, Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR));
+            response.setStatus(400);
         }
         getCertainUserAvatar(user.getUserId());
     }
 
     /**
      * logout
+     * 
      * @param session
      * @return
      */
     @DeleteMapping("/logout")
-    public Result<ResultCodeEnum> logout(HttpSession session){
+    public Result<ResultCodeEnum> logout(HttpSession session) {
         session.removeAttribute("token");
         return Result.ok(null);
     }

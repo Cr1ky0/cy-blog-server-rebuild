@@ -68,7 +68,7 @@ public class CommentController {
      */
     @PatchMapping("/browse")
     public Result<HashMap<String, Comment>> updateCommentLikes(@RequestParam("comment_id") Long commentId,
-        @RequestParam(value = "plus", defaultValue = "true") boolean plus) {
+        @RequestParam(value = "plus", defaultValue = "false") boolean plus) {
         Comment comment = commentService.getById(commentId);
         if (comment == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
@@ -80,6 +80,7 @@ public class CommentController {
             else
                 num = comment.getLikes() - 1;
         }
+        System.out.println(num);
         boolean updated = commentService.update(
             new LambdaUpdateWrapper<Comment>().eq(Comment::getCommentId, commentId).set(Comment::getLikes, num));
         if (updated) {

@@ -111,12 +111,12 @@ public class MenuController {
 
     /**
      * 修改排序
-     * 
      * @param idList
      * @return
      */
     @PatchMapping("/sort")
     public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
+        System.out.println(idList);
         return menuService.sort(idList, userId);
     }
 

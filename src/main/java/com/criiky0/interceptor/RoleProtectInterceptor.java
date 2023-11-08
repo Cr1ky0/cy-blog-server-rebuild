@@ -39,11 +39,13 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
             Result<Object> r = Result.build(null, ResultCodeEnum.NOT_LOGIN);
             if (jwtCookie == null || attribute == null) {
                 LoginProtectUtil.writeToResponse(response, r);
+                response.setStatus(401);
                 return false;
             }
             String jwt = jwtCookie.getValue();
             if (StringUtils.isEmpty(jwt) || jwtHelper.isExpiration(jwt)) {
                 LoginProtectUtil.writeToResponse(response, r);
+                response.setStatus(401);
                 return false;
             }
 
@@ -51,6 +53,7 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
             if (!jwtHelper.getUserRole(jwt).equals("admin")) {
                 Result<Object> r1 = Result.build(null, ResultCodeEnum.ROLE_NOT_ALLOW);
                 LoginProtectUtil.writeToResponse(response, r1);
+                response.setStatus(401);
                 return false;
             }
 
@@ -60,6 +63,7 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
             return true;
         }catch (Exception e){
             Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+            response.setStatus(401);
             return false;
         }
     }

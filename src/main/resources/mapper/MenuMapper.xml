@@ -116,7 +116,8 @@
         SELECT *
         FROM menu
         WHERE menu_id = #{menuId}
-          and deleted = 0;
+          and deleted = 0
+        order by sort asc;
     </select>
 
     <!-- Recursively select sub menus -->
@@ -124,7 +125,8 @@
         SELECT *
         FROM menu
         WHERE belong_menu_id = #{menuId}
-          and deleted = 0;
+          and deleted = 0
+        order by sort asc;
     </select>
 
     <!-- Select blogs by menu -->
@@ -132,7 +134,8 @@
         SELECT *
         FROM blog
         WHERE menu_id = #{menuId}
-          and deleted = 0;
+          and deleted = 0
+        order by sort asc;
     </select>
 
 </mapper>

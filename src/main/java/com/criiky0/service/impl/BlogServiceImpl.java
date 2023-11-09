@@ -55,6 +55,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     private final co.elastic.clients.elasticsearch._types.Result UPDATED =
         co.elastic.clients.elasticsearch._types.Result.Updated;
 
+    private final co.elastic.clients.elasticsearch._types.Result NOOP =
+        co.elastic.clients.elasticsearch._types.Result.NoOp;
+
     @Autowired
     public BlogServiceImpl(BlogMapper blogMapper, MenuMapper menuMapper, UserMapper userMapper) {
         this.blogMapper = blogMapper;
@@ -93,7 +96,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                 return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
             }
             // 如果加入ES索引失败则回滚
-            if (!response.result().equals(CREATED)) {
+            if (!response.result().equals(CREATED) && !response.result().equals(NOOP)) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
             }
@@ -155,12 +158,12 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         int update = blogMapper.update(null, updateWrapper);
         if (update > 0) {
             Blog updatedBlog = blogMapper.selectById(updateBlogVO.getBlogId());
-            Menu menu = menuMapper.selectById(updatedBlog.getMenuId());
+            Menu menu = menuMapper.selectById(updateBlogVO.getMenuId());
             // ES索引修改
             List<Object> paramList =
                 Arrays.asList(updateBlogVO.getTitle(), updateBlogVO.getContent(), updateBlogVO.getMenuId());
             boolean isAllNull = paramList.stream().allMatch(Objects::isNull);
-            if (!isAllNull) {
+            if (!isAllNull && !Objects.equals(updateBlogVO.getMenuId(), menu.getBelongMenuId())) {
                 ElasticsearchClient client = ElasticSearchUtil.client;
                 UpdateResponse<BlogDoc> response;
                 try {
@@ -172,7 +175,7 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
                 }
-                if (!response.result().equals(UPDATED)) {
+                if (!response.result().equals(UPDATED) && !response.result().equals(NOOP)) {
                     TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                     return Result.build(null, ResultCodeEnum.ES_OPERATION_ERROR);
                 }

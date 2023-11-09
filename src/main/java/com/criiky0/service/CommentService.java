@@ -26,4 +26,6 @@ public interface CommentService extends IService<Comment> {
     Result<ResultCodeEnum> deleteAllOfBlog(Long blogId);
 
     Result<ResultCodeEnum> deleteComment(Long commentId);
+
+    HashMap<String, List<CommentDTO>> selectAllOfBlog(Long blogId);
 }

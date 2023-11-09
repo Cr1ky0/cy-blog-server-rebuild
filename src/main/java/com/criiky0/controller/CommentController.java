@@ -99,7 +99,7 @@ public class CommentController {
      * @return
      */
     @GetMapping("/curblog")
-    public Result<HashMap<String, Object>> getAllCommentOfBlog(@RequestParam("blog_id") Long blogId,
+    public Result<HashMap<String, Object>> getCommentPageOfBlog(@RequestParam("blog_id") Long blogId,
         @RequestParam(value = "page", defaultValue = "1") Integer page,
         @RequestParam(value = "size", defaultValue = "5") Integer size,
         @RequestParam(value = "sort", defaultValue = "creat_at") String sort,
@@ -109,6 +109,21 @@ public class CommentController {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         }
         return commentService.getCommentPageOfBlog(blogId, page, size, sort, options);
+    }
+
+    /**
+     * 获取当前blog的所有comment
+     * @param blogId
+     * @return
+     */
+    @GetMapping("/all")
+    public Result<HashMap<String,List<CommentDTO>>> getAllOfBlog(@RequestParam("blog_id") Long blogId) {
+        boolean exists = blogService.exists(new LambdaQueryWrapper<Blog>().eq(Blog::getBlogId, blogId));
+        if (!exists) {
+            return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+        }
+        HashMap<String, List<CommentDTO>> comments = commentService.selectAllOfBlog(blogId);
+        return Result.ok(comments);
     }
 
     /**

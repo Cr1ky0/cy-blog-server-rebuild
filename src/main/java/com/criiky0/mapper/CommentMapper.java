@@ -19,4 +19,6 @@ public interface CommentMapper extends BaseMapper<Comment> {
     IPage<Map> selectCommentDTOsOfBlog(IPage<CommentDTO> page, Long blogId, String sort, Map<String, String> queryMap);
 
     List<CommentDTO> selectSubComment(Long commentId);
+
+    List<CommentDTO> selectAllOfBlog(Long blogId);
 }

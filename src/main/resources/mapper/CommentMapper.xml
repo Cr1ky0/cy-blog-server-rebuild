@@ -63,4 +63,11 @@
         where belong_comment_id = #{commentId}
           and deleted = 0;
     </select>
+
+    <select id="selectAllOfBlog" resultMap="CommentDTOResultMap">
+        select *
+        from comment
+        where blog_id = #{blogId}
+          and deleted = 0;
+    </select>
 </mapper>

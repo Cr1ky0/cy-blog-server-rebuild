@@ -100,6 +100,7 @@
                COUNT(c.comment_id)     AS commentCount
         FROM blog b
                  LEFT JOIN comment c ON b.blog_id = c.blog_id
+        where c.deleted = 0
         GROUP BY b.blog_id, b.title
         HAVING commentCount > 0
     </select>

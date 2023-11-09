@@ -12,12 +12,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.criiky0.mapper.BlogMapper;
+import com.criiky0.mapper.CommentMapper;
 import com.criiky0.mapper.MenuMapper;
 import com.criiky0.mapper.OssConfigMapper;
 import com.criiky0.pojo.Blog;
 import com.criiky0.pojo.BlogDoc;
 import com.criiky0.pojo.OssConfig;
 import com.criiky0.pojo.User;
+import com.criiky0.pojo.dto.CommentDTO;
 import com.criiky0.pojo.dto.MenuDTO;
 import com.criiky0.service.MenuService;
 import com.criiky0.utils.ElasticSearchUtil;
@@ -44,6 +46,9 @@ public class MyTest {
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private CommentMapper commentMapper;
 
     @Autowired
     private OssConfigMapper ossConfigMapper;
@@ -178,5 +183,11 @@ public class MyTest {
         List<Hit<BlogDoc>> hits = search.hits().hits();
         System.out.println(hits);
 
+    }
+
+    @Test
+    public void test18() {
+        List<CommentDTO> commentDTOS = commentMapper.selectAllOfBlog(1721776501300305922L);
+        System.out.println(commentDTOS);
     }
 }

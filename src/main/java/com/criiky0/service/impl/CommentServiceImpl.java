@@ -94,4 +94,12 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         commentMapper.deleteById(commentId);
         return Result.ok(null);
     }
+
+    @Override
+    public HashMap<String, List<CommentDTO>> selectAllOfBlog(Long blogId) {
+        List<CommentDTO> comments = commentMapper.selectAllOfBlog(blogId);
+        HashMap<String, List<CommentDTO>> map = new HashMap<>();
+        map.put("comments", comments);
+        return map;
+    }
 }

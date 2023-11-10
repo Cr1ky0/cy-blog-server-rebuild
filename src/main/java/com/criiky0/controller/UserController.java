@@ -63,6 +63,9 @@ public class UserController {
         try (OutputStream os = response.getOutputStream()) {
             User user = userService.getById(userId);
             String avatar = user.getAvatar();
+            if (avatar == null) {
+                avatar = "default.webp";
+            }
             // 获取后缀
             File file = new File(AVATAR_DIR, avatar);
             String fileName = file.getName();

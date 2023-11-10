@@ -5,6 +5,7 @@
 * ~2023-11-06:前端对接基本完成，ES查询还没写（api暂时不更新，等全部写完一起更）
 * ~2023-11-08:前端对接完了，修复部分功能
 
+
 # 技术栈
 * 前端：Typescript + React + Redux + Antd
 * 后端：Spring + SpringMVC + Mybatis-Plus + SpringBoot + MySQL
@@ -565,15 +566,15 @@
 
 
 
-## Comment模块
+##### Comment模块
 
-### 根路径
+###### 根路径
 
 ```
 /api/comment
 ```
 
-### API
+###### API
 
 1. 添加评论
 
@@ -710,17 +711,31 @@
    }
    ```
 
+9. 获取当前blog的所有Comment
+
+   ```
+   /all
+   GET
+   ?blog_id=
+   返回参数
+   {
+   	comments:[
+   		{...}
+   	]
+   }
+   ```
 
 
-## OSSConfig
 
-### 根路径
+#### OSSConfig
+
+##### 根路径
 
 ```
 /api/oss
 ```
 
-### API
+##### API
 
 1. 添加Config
 
@@ -782,15 +797,15 @@
 
 
 
-## Image模块
+### Image模块
 
-### 根路径
+#### 根路径
 
 ```
 /api/image
 ```
 
-### API
+#### API
 
 1. 添加照片
 
@@ -947,6 +962,7 @@
    }
    ```
 
+   
    
 
    

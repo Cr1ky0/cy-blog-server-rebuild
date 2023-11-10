@@ -36,13 +36,13 @@ public class KaptchConfig {
         properties.setProperty("kaptcha.textproducer.char.string",
             "023456789ABCDEFGHJKMNOPQRSTUVWXYZabcderfghijklmnopqrstuvwxyz");
         // 验证码长度
-        properties.setProperty("kaptcha.textproducer.char.length", "6");
+        properties.setProperty("kaptcha.textproducer.char.length", "5");
         // 字体
         properties.setProperty("kaptcha.textproducer.font.names", "宋体");
         // 字体颜色
         properties.setProperty("kaptcha.textproducer.font.color", getRandomColor());
         // 文字间隔
-        properties.setProperty("kaptcha.textproducer.char.space", "2");
+        properties.setProperty("kaptcha.textproducer.char.space", "1");
         // 干扰实现类
         properties.setProperty("kaptcha.noise.impl", "com.google.code.kaptcha.impl.DefaultNoise");
         // 干扰颜色

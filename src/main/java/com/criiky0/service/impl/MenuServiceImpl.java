@@ -167,27 +167,30 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     public Result<HashMap<String, Menu>> updateMenu(UpdateMenuVO updateMenuVO, Long userId) {
         Long menuId = updateMenuVO.getMenuId();
         Menu menu = menuMapper.selectById(menuId);
-        int level = 0;
-        if (updateMenuVO.getBelongMenuId() != null && updateMenuVO.getBelongMenuId() != 0) {
-            Menu belong = menuMapper.selectById(updateMenuVO.getBelongMenuId());
-            if (belong == null)
-                return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
-            level = belong.getLevel() + 1;
+        int level = 1;
+
+        // belong
+        if (updateMenuVO.getBelongMenuId() != null) {
+            if (menu.getBelongMenuId() == 0) {
+                updateMenuVO.setBelongMenuId(null);
+            }else {
+                Menu belong = menuMapper.selectById(updateMenuVO.getBelongMenuId());
+                if (belong == null)
+                    return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
+                level = belong.getLevel() + 1;
+            }
         }
         if (menu == null)
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
         if (!menu.getUserId().equals(userId))
             return Result.build(null, ResultCodeEnum.OPERATION_ERROR);
         LambdaUpdateWrapper<Menu> wrapper = new LambdaUpdateWrapper<>();
-        if (menu.getBelongMenuId() == null) {
-            updateMenuVO.setBelongMenuId(null);
-            level = 1;
-        }
         wrapper.eq(Menu::getMenuId, updateMenuVO.getMenuId())
             .set(updateMenuVO.getTitle() != null, Menu::getTitle, updateMenuVO.getTitle())
             .set(updateMenuVO.getIcon() != null, Menu::getIcon, updateMenuVO.getIcon())
             .set(updateMenuVO.getColor() != null, Menu::getColor, updateMenuVO.getColor())
-            .set(Menu::getBelongMenuId, updateMenuVO.getBelongMenuId()).set(Menu::getLevel, level);
+            .set(updateMenuVO.getBelongMenuId() != null, Menu::getBelongMenuId, updateMenuVO.getBelongMenuId())
+            .set(updateMenuVO.getBelongMenuId() != null, Menu::getLevel, level);
         int update = menuMapper.update(null, wrapper);
         if (update > 0) {
             Menu updatedMenu = menuMapper.selectById(updateMenuVO.getMenuId());

@@ -8,6 +8,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
+import co.elastic.clients.transport.endpoints.BooleanResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -189,5 +190,18 @@ public class MyTest {
     public void test18() {
         List<CommentDTO> commentDTOS = commentMapper.selectAllOfBlog(1721776501300305922L);
         System.out.println(commentDTOS);
+    }
+
+    @Test
+    public void test19() throws IOException {
+//        / 方法1: 使用 IndicesExistsRequest
+        ElasticsearchClient client = ElasticSearchUtil.client;
+        BooleanResponse blogs = client.indices().exists(d -> d.index("blogs"));
+        System.out.println(blogs.value());
+    }
+
+    @Test
+    public void test20(){
+        System.out.println(ElasticSearchUtil.hasEsIndex("blogs"));
     }
 }

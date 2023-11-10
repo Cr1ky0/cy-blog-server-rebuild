@@ -1,5 +1,8 @@
 # self
+/setting
 application.yml
+application-dev.yml
+setting/prod/application.yml
 /logs
 /public
 

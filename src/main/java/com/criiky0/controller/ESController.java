@@ -32,7 +32,6 @@ public class ESController {
 
     /**
      * 生成基于menuTitle的分类List
-     * 
      * @param docs
      * @return
      */
@@ -57,12 +56,12 @@ public class ESController {
 
     /**
      * search
-     * 
      * @param field
      * @return
      */
     @GetMapping("/search")
     public Result searchEs(@RequestParam("field") String field) {
+        ElasticSearchUtil.createIndexIfNotExists("blogs");
         ElasticsearchClient client = ElasticSearchUtil.client;
         SearchResponse<BlogDoc> search = null;
         try {

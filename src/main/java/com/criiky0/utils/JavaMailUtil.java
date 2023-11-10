@@ -55,6 +55,10 @@ public class JavaMailUtil {
         props.put("mail.smtp.auth", "true");// 是否需要用户认证
         props.put("mail.smtp.starttls.enale", "true");// 启用TlS加密
 
+        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+        props.put("mail.smtp.socketFactory.port", JavaMailUtil.port);
+        props.put("mail.smtp.socketFactory.fallback", "false");
+
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {

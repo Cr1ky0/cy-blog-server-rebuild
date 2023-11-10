@@ -8,6 +8,7 @@ import com.criiky0.pojo.dto.BlogDTO;
 import com.criiky0.pojo.vo.UpdateBlogVO;
 import com.criiky0.service.BlogService;
 import com.criiky0.service.UserService;
+import com.criiky0.utils.ElasticSearchUtil;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,12 +44,13 @@ public class BlogController {
     public Result<HashMap<String, Blog>> addBlog(@Validated @RequestBody Blog blog,
         @RequestAttribute("userid") Long userId) {
         blog.setUserId(userId);
+        ElasticSearchUtil.createIndexIfNotExists("blogs");
         return blogService.addBlog(blog);
     }
 
     /**
      * 根据id获取博客
-     * 
+     *
      * @param menuId
      * @return
      */
@@ -64,7 +66,6 @@ public class BlogController {
 
     /**
      * 删除博客
-     * 
      * @param blogId
      * @param userId
      * @return
@@ -77,7 +78,6 @@ public class BlogController {
 
     /**
      * 更新博客
-     * 
      * @param updateBlogVO
      * @param userId
      * @return
@@ -97,7 +97,7 @@ public class BlogController {
 
     /**
      * 删除指定menu下的所有blogs
-     * 
+     *
      * @param menuId
      * @param userId
      * @return
@@ -110,7 +110,7 @@ public class BlogController {
 
     /**
      * 获取博客分页数据 这里获取的是我自己的博客
-     * 
+     *
      * @param page
      * @param size
      * @param options 自定义options，用,隔开每个查询条件（&options=collected:true,sort:likes）
@@ -130,7 +130,7 @@ public class BlogController {
 
     /**
      * 更新浏览数据
-     * 
+     *
      * @param blogId
      * @param like
      * @param plus
@@ -184,7 +184,7 @@ public class BlogController {
 
     /**
      * 查询criiky0的收藏列表
-     * 
+     *
      * @return
      */
     @GetMapping("/criiky0/collected")
@@ -194,7 +194,7 @@ public class BlogController {
 
     /**
      * 查询criiky0的TimeLine
-     * 
+     *
      * @return
      */
     @GetMapping("/criiky0/timeline")
@@ -204,7 +204,7 @@ public class BlogController {
 
     /**
      * 获取指定menu下的blogs
-     * 
+     *
      * @param menuId
      * @return
      */
@@ -215,7 +215,7 @@ public class BlogController {
 
     /**
      * 修改排序
-     * 
+     *
      * @param idList
      * @return
      */
@@ -226,7 +226,7 @@ public class BlogController {
 
     /**
      * 获取criiky0的blog数量
-     * 
+     *
      * @return
      */
     @GetMapping("/criiky0/count")

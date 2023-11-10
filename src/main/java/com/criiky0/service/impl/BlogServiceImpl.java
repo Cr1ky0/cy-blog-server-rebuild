@@ -6,7 +6,6 @@ import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.criiky0.mapper.MenuMapper;

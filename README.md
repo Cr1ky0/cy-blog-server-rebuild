@@ -1,11 +1,15 @@
 # Criik-Blog-Server-Rebuild
+* criik-blog后端重构，原项目地址：https://github.com/Creekyu/criik-blog
 * 包含登录拦截器、参数校验、日志系统、统一异常处理
+* 提供了user的api，后续可能会开放注册。
+* 网址：https://www.criiky0.top
+
+# 日志
 * ~2023-10-30:基本完成用户、博客（ES附加）、评论、菜单模块
 * ~2023-11-02:添加OSS设置、OSS图像上传、删除等功能，完善其他模块
 * ~2023-11-06:前端对接基本完成，ES查询还没写（api暂时不更新，等全部写完一起更）
 * ~2023-11-08:前端对接完了，修复部分功能
 * ~2023-11-10:上线部署修改部分地方进行适配
-
 
 # 技术栈
 * 前端：Typescript + React + Redux + Antd

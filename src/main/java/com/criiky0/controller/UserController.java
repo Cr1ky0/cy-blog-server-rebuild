@@ -195,7 +195,7 @@ public class UserController {
      * @param data RegisterVo
      * @param session session
      */
-    @PostMapping("register")
+     @PostMapping("register")
     public Result<HashMap<String, Long>> register(@Valid @RequestBody RegisterVO data, HttpSession session) {
         // 验证code
         Integer code = (Integer)session.getAttribute("verify-code");

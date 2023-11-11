@@ -165,27 +165,25 @@ public class UserController {
         Result result = userService.login(loginVo);
         if (result.getCode() == 200) {
             String token = result.getData().toString();
-            Cookie cookie = new Cookie("token", token);
+            Cookie cookie = new Cookie("jwt-token", token);
             cookie.setHttpOnly(true);
             cookie.setPath("/api");
             // 生产环境打开HTTPS
             if (environmentChecker.isProduction()) {
                 cookie.setSecure(true);
             }
-            response.addCookie(cookie);
             // 删除session
             session.removeAttribute("login_code");
             // 添加过期时间
             Long expireTime = jwtHelper.getExpiration(token);
             HashMap<String, Long> map = new HashMap<>();
             map.put("expireTime", expireTime);
-            // 添加Session
-            session.setAttribute("token", token);
             // 设置过期时间
             long timestamp = expireTime - System.currentTimeMillis();
             long sec = timestamp / 1000;
-            // 注意以秒为单位
-            session.setMaxInactiveInterval((int)sec);
+            // 设置cookie最大时间
+            cookie.setMaxAge((int)(sec));
+            response.addCookie(cookie);
             return Result.ok(map);
         }
         return result;
@@ -197,7 +195,7 @@ public class UserController {
      * @param data RegisterVo
      * @param session session
      */
-     @PostMapping("register")
+    @PostMapping("register")
     public Result<HashMap<String, Long>> register(@Valid @RequestBody RegisterVO data, HttpSession session) {
         // 验证code
         Integer code = (Integer)session.getAttribute("verify-code");
@@ -221,24 +219,23 @@ public class UserController {
         // 返回token
         if (status == 200) {
             String token = r.getData().toString();
-            Cookie cookie = new Cookie("token", token);
+            Cookie cookie = new Cookie("jwt-token", token);
             cookie.setHttpOnly(true);
             cookie.setPath("/api");
             // 生产环境打开HTTPS
             if (environmentChecker.isProduction()) {
                 cookie.setSecure(true);
             }
-            response.addCookie(cookie);
             // 添加过期时间
             HashMap<String, Long> map = new HashMap<>();
             Long expireTime = jwtHelper.getExpiration(token);
             map.put("expireTime", expireTime);
-            // 添加Session
-            session.setAttribute("token", token);
             // 设置过期时间
             long timestamp = expireTime - System.currentTimeMillis();
             long sec = timestamp / 1000;
-            session.setMaxInactiveInterval((int)sec);
+            // 设置cookie最大时间
+            cookie.setMaxAge((int)(sec));
+            response.addCookie(cookie);
             return Result.ok(map);
         }
         // 移除session

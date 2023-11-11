@@ -34,13 +34,11 @@ public class LoginProtectInterceptor implements HandlerInterceptor {
             }
 
             // cookie处理
-            Cookie jwtCookie = LoginProtectUtil.getCookieByName(request, "token");
-            // 获取session
-            HttpSession session = request.getSession();
-            Object attribute = session.getAttribute("token");
+            Cookie jwtCookie = LoginProtectUtil.getCookieByName(request, "jwt-token");
+
             // 未登录
             Result<Object> r = Result.build(null, ResultCodeEnum.NOT_LOGIN);
-            if (jwtCookie == null || attribute == null) {
+            if (jwtCookie == null) {
                 LoginProtectUtil.writeToResponse(response, r);
                 response.setStatus(401);
                 return false;

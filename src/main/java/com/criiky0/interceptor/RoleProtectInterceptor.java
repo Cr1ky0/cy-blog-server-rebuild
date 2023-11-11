@@ -31,13 +31,10 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
             }
 
             // cookie处理
-            Cookie jwtCookie = LoginProtectUtil.getCookieByName(request, "token");
-            // 获取session
-            HttpSession session = request.getSession();
-            Object attribute = session.getAttribute("token");
+            Cookie jwtCookie = LoginProtectUtil.getCookieByName(request, "jwt-token");
             // 未登录
             Result<Object> r = Result.build(null, ResultCodeEnum.NOT_LOGIN);
-            if (jwtCookie == null || attribute == null) {
+            if (jwtCookie == null) {
                 LoginProtectUtil.writeToResponse(response, r);
                 response.setStatus(401);
                 return false;
@@ -61,8 +58,8 @@ public class RoleProtectInterceptor implements HandlerInterceptor {
             Long userId = jwtHelper.getUserId(jwt);
             request.setAttribute("userid", userId);
             return true;
-        }catch (Exception e){
-            Result.build(null,ResultCodeEnum.UNKNOWN_ERROR);
+        } catch (Exception e) {
+            Result.build(null, ResultCodeEnum.UNKNOWN_ERROR);
             response.setStatus(401);
             return false;
         }

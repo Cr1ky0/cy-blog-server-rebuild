@@ -2,10 +2,12 @@ package com.criiky0.advice;
 
 import java.util.Arrays;
 
+import com.criiky0.utils.EnvironmentChecker;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Slf4j
 public class LogAdvice {
+    @Autowired
+    private EnvironmentChecker environmentChecker;
 
     @Around(value = "com.criiky0.pointcut.LogPointCut.cut()")
     public Object manageTransaction(
@@ -54,9 +58,11 @@ public class LogAdvice {
             log.info("[AOP 环绕通知] 回滚事务，方法名：" + methodName + "，异常：" + e.getClass().getName());
             log.info("异常信息如下：");
             log.info(e.getMessage());
-            StackTraceElement[] traces = e.getStackTrace();
-            for(StackTraceElement trace : traces){
-                log.info(trace.toString());
+            if (environmentChecker.isDevelopment()) {
+                StackTraceElement[] traces = e.getStackTrace();
+                for (StackTraceElement trace : traces) {
+                    log.info(trace.toString());
+                }
             }
 
         }

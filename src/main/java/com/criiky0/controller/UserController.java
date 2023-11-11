@@ -182,8 +182,10 @@ public class UserController {
             // 添加Session
             session.setAttribute("token", token);
             // 设置过期时间
-            int time = (int)(expireTime - System.currentTimeMillis());
-            session.setMaxInactiveInterval(time);
+            long timestamp = expireTime - System.currentTimeMillis();
+            long sec = timestamp / 1000;
+            // 注意以秒为单位
+            session.setMaxInactiveInterval((int)sec);
             return Result.ok(map);
         }
         return result;
@@ -234,8 +236,9 @@ public class UserController {
             // 添加Session
             session.setAttribute("token", token);
             // 设置过期时间
-            int time = (int)(expireTime - System.currentTimeMillis());
-            session.setMaxInactiveInterval(time);
+            long timestamp = expireTime - System.currentTimeMillis();
+            long sec = timestamp / 1000;
+            session.setMaxInactiveInterval((int)sec);
             return Result.ok(map);
         }
         // 移除session

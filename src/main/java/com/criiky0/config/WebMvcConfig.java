@@ -29,7 +29,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         registry.addInterceptor(roleProtectInterceptor)
             .addPathPatterns("/api/user/role", "/api/user/register","/api/menu/**", "/api/blog/**", "/api/comment/**",
-                "/api/oss/**", "/api/image/**")
+                "/api/oss/**", "/api/image/**","/api/announce/**")
             .excludePathPatterns(
                     "/api/menu/criiky0", "/api/menu/single/**",
                     "/api/blog/criiky0/**", "/api/blog/single/**", "/api/blog/browse",
@@ -37,7 +37,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                     "/api/comment/post", "/api/comment/browse", "/api/comment/curblog/**",
                     "/api/comment/single/**","/api/comment/emoji",
                     "/api/oss/callback",
-                    "/api/image/criiky0");
+                    "/api/image/criiky0",
+                    "/api/announce/single");
     }
 
 }

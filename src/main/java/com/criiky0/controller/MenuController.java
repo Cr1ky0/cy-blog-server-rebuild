@@ -120,9 +120,4 @@ public class MenuController {
     public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
         return menuService.sort(idList, userId);
     }
-
-    @GetMapping("/test")
-    public void test() {
-        int i = 1 / 0;
-    }
 }

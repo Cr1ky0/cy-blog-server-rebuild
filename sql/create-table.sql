@@ -1,5 +1,3 @@
--- `criik-blog-local`.blog definition
-
 CREATE TABLE `blog`
 (
     `blog_id`   bigint NOT NULL COMMENT '文章id',
@@ -21,8 +19,6 @@ CREATE TABLE `blog`
   COLLATE = utf8mb4_0900_ai_ci;
 
 
--- `criik-blog-local`.comment definition
-
 CREATE TABLE `comment`
 (
     `comment_id`        bigint       NOT NULL COMMENT '评论id',
@@ -42,8 +38,6 @@ CREATE TABLE `comment`
   COLLATE = utf8mb4_0900_ai_ci;
 
 
--- `criik-blog-local`.image definition
-
 CREATE TABLE `image`
 (
     `image_id`   bigint      NOT NULL COMMENT 'image_id',
@@ -61,8 +55,6 @@ CREATE TABLE `image`
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;
 
-
--- `criik-blog-local`.menu definition
 
 CREATE TABLE `menu`
 (
@@ -83,8 +75,6 @@ CREATE TABLE `menu`
   COLLATE = utf8mb4_0900_ai_ci;
 
 
--- `criik-blog-local`.oss_config definition
-
 CREATE TABLE `oss_config`
 (
     `id`                bigint      NOT NULL,
@@ -102,8 +92,6 @@ CREATE TABLE `oss_config`
   COLLATE = utf8mb4_0900_ai_ci;
 
 
--- `criik-blog-local`.`user` definition
-
 CREATE TABLE `user`
 (
     `user_id`   bigint      NOT NULL COMMENT '用户id',
@@ -120,6 +108,19 @@ CREATE TABLE `user`
     PRIMARY KEY (`user_id`),
     UNIQUE KEY `username_unique` (`username`),
     UNIQUE KEY `email_unique` (`email`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4
+  COLLATE = utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `announce`
+(
+    `id`        bigint not null comment 'announce id',
+    `content`   varchar(50) default null comment 'contnet',
+    `create_at` datetime    DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+    `version`   int         DEFAULT '1' COMMENT '乐观锁',
+    `deleted`   int         DEFAULT '0' COMMENT '1 删除，0 未删除',
+    primary key (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4
   COLLATE = utf8mb4_0900_ai_ci;

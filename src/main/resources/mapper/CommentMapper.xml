@@ -68,6 +68,7 @@
         select *
         from comment
         where blog_id = #{blogId}
+          and belong_comment_id is null
           and deleted = 0;
     </select>
 </mapper>

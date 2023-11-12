@@ -71,6 +71,7 @@ public class MenuController {
 
     /**
      * 查找单个Menu
+     * 
      * @param menuId
      * @return
      */
@@ -117,8 +118,11 @@ public class MenuController {
      */
     @PatchMapping("/sort")
     public Result<ResultCodeEnum> sort(@RequestBody List<Long> idList, @RequestAttribute("userid") Long userId) {
-        System.out.println(idList);
         return menuService.sort(idList, userId);
     }
 
+    @GetMapping("/test")
+    public void test() {
+        int i = 1 / 0;
+    }
 }

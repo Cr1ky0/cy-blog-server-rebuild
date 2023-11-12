@@ -4,6 +4,7 @@ import com.alibaba.druid.util.StringUtils;
 import com.criiky0.utils.EnvironmentChecker;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.HashMap;
 
@@ -20,13 +22,35 @@ import java.util.HashMap;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    @Autowired
     private EnvironmentChecker environmentChecker;
+
+    private HttpServletRequest request;
+
+    @Autowired
+    public GlobalExceptionHandler(EnvironmentChecker environmentChecker, HttpServletRequest request) {
+        this.environmentChecker = environmentChecker;
+        this.request = request;
+    }
+
+    private void printErrorDetails(Exception e){
+        log.error("*".repeat(40) + "发生异常" + "*".repeat(40));
+        log.error("异常URI:" + request.getRequestURI());
+        log.error("请求类型:" + request.getMethod());
+        log.error("异常类型:" + e.getClass().getName());
+        if (environmentChecker.isDevelopment()) {
+            StackTraceElement[] traces = e.getStackTrace();
+            for (StackTraceElement trace : traces) {
+                log.error(trace.toString());
+            }
+        }
+        log.error("*".repeat(40) + "发生异常" + "*".repeat(40));
+    }
 
     // 参数NULL异常
     @ExceptionHandler({MissingServletRequestParameterException.class})
     public Result<HashMap<String, String>>
         missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e) {
+        printErrorDetails(e);
         HashMap<String, String> errorMap = new HashMap<>();
         errorMap.put("error", e.getMessage());
         return Result.build(errorMap, ResultCodeEnum.PARAM_NULL_ERROR);
@@ -35,6 +59,7 @@ public class GlobalExceptionHandler {
     // 参数校验异常
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public Result<HashMap<String, String>> methodArgumentNotValidExceptionHandler(MethodArgumentNotValidException e) {
+        printErrorDetails(e);
         HashMap<String, String> errorMap = new HashMap<>();
         String msg = e.getBindingResult().getFieldError().getDefaultMessage();
         if (!StringUtils.isEmpty(msg))
@@ -47,6 +72,7 @@ public class GlobalExceptionHandler {
     // 约束验证异常
     @ExceptionHandler({ConstraintViolationException.class})
     public Result<HashMap<String, String>> constraintViolationExceptionHandler(ConstraintViolationException e) {
+        printErrorDetails(e);
         StringBuffer sb = new StringBuffer();
         for (ConstraintViolation<?> violation : e.getConstraintViolations()) {
             sb.append(violation.getMessage());
@@ -59,6 +85,7 @@ public class GlobalExceptionHandler {
     // BindException
     @ExceptionHandler({BindException.class})
     public Result<HashMap<String, String>> bindExceptionHandler(BindException e) {
+        printErrorDetails(e);
         String msg = e.getBindingResult().getFieldError().getDefaultMessage();
         HashMap<String, String> map = new HashMap<>();
         if (!StringUtils.isEmpty(msg))
@@ -71,15 +98,9 @@ public class GlobalExceptionHandler {
     // 其他Exception
     @ExceptionHandler(Exception.class)
     public Result<HashMap<String, String>> exceptionHandler(Exception e) {
+        printErrorDetails(e);
         HashMap<String, String> errorMap = new HashMap<>();
         errorMap.put("error", e.getMessage());
-        log.info("发生异常：" + e.getClass().getName());
-        if (environmentChecker.isDevelopment()) {
-            StackTraceElement[] traces = e.getStackTrace();
-            for (StackTraceElement trace : traces) {
-                log.info(trace.toString());
-            }
-        }
         return Result.build(errorMap, ResultCodeEnum.OCCUR_EXCEPTION);
     }
 

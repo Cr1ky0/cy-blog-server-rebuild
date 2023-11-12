@@ -80,7 +80,6 @@ public class CommentController {
             else
                 num = comment.getLikes() - 1;
         }
-        System.out.println(num);
         boolean updated = commentService.update(
             new LambdaUpdateWrapper<Comment>().eq(Comment::getCommentId, commentId).set(Comment::getLikes, num));
         if (updated) {

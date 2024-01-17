@@ -63,7 +63,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
     }
 
     @Override
-    public Result<Map<String,String>> getPolicy() {
+    public Result<Map<String, String>> getPolicy() {
         OssConfig config = ossConfigMapper.selectOne(new QueryWrapper<>());
         if (config == null) {
             return Result.build(null, ResultCodeEnum.CANNOT_FIND_ERROR);
@@ -77,7 +77,7 @@ public class OssConfigServiceImpl extends ServiceImpl<OssConfigMapper, OssConfig
         OSS ossClient = new OSSClientBuilder().build(config.getEndpoint(), credentialsProvider);
         try {
             long expireTime = 30;
-            long expireEndTime = System.currentTimeMillis() + expireTime * 1000;
+            long expireEndTime = System.currentTimeMillis() + expireTime * 1000 * 60;
             Date expiration = new Date(expireEndTime);
             // PostObject请求最大可支持的文件大小为500MB，即CONTENT_LENGTH_RANGE为50*1024*1024。
             PolicyConditions policyConds = new PolicyConditions();

@@ -19,7 +19,7 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         if(environmentChecker.isProduction()){
             registry.addMapping("/**")
-                    .allowedOrigins("https://www.criiky0.top","http://8.130.129.88") // 不能为通配符，不然会报错
+                    .allowedOrigins("https://www.criiky0.top","http://114.55.134.161") // 不能为通配符，不然会报错
                     .allowedMethods("GET","POST","PUT","PATCH","DELETE")
                     .allowedHeaders("*")
                     .allowCredentials(true)

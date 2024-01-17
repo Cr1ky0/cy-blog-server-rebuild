@@ -10,7 +10,6 @@ import com.criiky0.service.CommentService;
 import com.criiky0.utils.Result;
 import com.criiky0.utils.ResultCodeEnum;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -58,6 +57,7 @@ public class CommentController {
     public Result<ResultCodeEnum> deleteComment(@RequestParam("comment_id") Long commentId) {
         return commentService.deleteComment(commentId);
     }
+
 
     /**
      * 更新评论浏览数据

@@ -1,5 +1,5 @@
-# Criik-Blog-Server-Rebuild
-* criik-blog后端重构，原项目地址：https://github.com/Creekyu/criik-blog
+# cy-blog
+* cy-blog后端重构
 * 包含登录拦截器、参数校验、日志系统、统一异常处理
 * 提供了user的api，后续可能会开放注册。
 * 网址：https://www.criiky0.top
